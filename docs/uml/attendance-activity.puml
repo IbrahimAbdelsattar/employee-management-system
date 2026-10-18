@@ -1,0 +1,35 @@
+@startuml NexaHR_Attendance_Activity_Diagram
+skinparam shadowing false
+start
+:Authenticated Employee requests Attendance Action;
+if (Action Type?) then (Check-In)
+  :Query attendance_records for employee_id\nwhere status = 'OPEN';
+  if (Open session exists?) then (yes)
+    :Return HTTP 400 Bad Request\n(Duplicate Check-In Prevented);
+    stop
+  else (no)
+    :Capture authoritative Server UTC Timestamp;
+    :Load assigned work_shifts (start_time, grace_period_minutes);
+    :Execute calculateAttendanceMetrics() in Africa/Cairo (UTC+2);
+    :Insert attendance_records row with status = 'OPEN';
+    :Record ATTENDANCE_CHECK_IN in audit_logs;
+  endif
+else (Check-Out)
+  :Query attendance_records for employee_id\nwhere status = 'OPEN';
+  if (Open session exists?) then (no)
+    :Return HTTP 400 Bad Request\n(No Active Check-In Found);
+    stop
+  else (yes)
+    :Capture Server UTC Check-Out Timestamp;
+    :Calculate worked_minutes = round((checkOut - checkIn) / 60000);
+    if (late_minutes > 0?) then (yes)
+      :Set status = 'LATE';
+    else (no)
+      :Set status = 'PRESENT';
+    endif
+    :Update attendance_records row in PostgreSQL;
+    :Record ATTENDANCE_CHECK_OUT in audit_logs;
+  endif
+endif
+stop
+@enduml

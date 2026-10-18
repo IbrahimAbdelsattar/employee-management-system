@@ -1,0 +1,6 @@
+{
+  "name": "NexaHR",
+  "description": "Enterprise-Grade Employee Management System for NexaWorks — People, Performance, Possibilities.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

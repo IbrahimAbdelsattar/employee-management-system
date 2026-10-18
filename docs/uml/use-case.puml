@@ -1,0 +1,62 @@
+@startuml NexaHR_Use_Case_Diagram
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Employee" as Emp
+actor "Department Manager" as Mgr
+actor "HR Manager" as HR
+actor "System Administrator" as Admin
+
+Emp <|-- Mgr
+Emp <|-- HR
+Emp <|-- Admin
+
+rectangle "NexaHR Enterprise Employee Management System" {
+  usecase "UC-01: Authenticate & Resolve Role Session" as UC01
+  usecase "UC-02: Create & Provision Employee" as UC02
+  usecase "UC-03: Update Employee & Validate Hierarchy" as UC03
+  usecase "UC-04: Check In Attendance (UTC)" as UC04
+  usecase "UC-05: Check Out & Calculate Duration" as UC05
+  usecase "UC-06: Submit Leave Application" as UC06
+  usecase "UC-07: Approve / Reject Team Leave" as UC07
+  usecase "UC-08: Cancel Leave & Restore Balance" as UC08
+  usecase "UC-09: Assign & Progress Kanban Tasks" as UC09
+  usecase "UC-10: Author, Publish & Acknowledge Review" as UC10
+  usecase "UC-11: Manage Onboarding / Offboarding" as UC11
+  usecase "UC-12: Approve & Disburse Payroll Simulation" as UC12
+  usecase "UC-13: Configure Org Policies & Inspect Audit Logs" as UC13
+
+  usecase "Validate Leave Balance & Non-Overlap" as V_Leave
+  usecase "Record Security Audit Log" as V_Audit
+  usecase "Dispatch Persistent Notification" as V_Notif
+}
+
+Emp --> UC01
+Emp --> UC04
+Emp --> UC05
+Emp --> UC06
+Emp --> UC08
+Emp --> UC09
+Emp --> UC10
+
+Mgr --> UC07
+Mgr --> UC09
+Mgr --> UC10
+
+HR --> UC02
+HR --> UC03
+HR --> UC07
+HR --> UC11
+HR --> UC12
+
+Admin --> UC02
+Admin --> UC12
+Admin --> UC13
+
+UC06 ..> V_Leave : <<include>>
+UC07 ..> V_Notif : <<include>>
+UC02 ..> V_Audit : <<include>>
+UC07 ..> V_Audit : <<include>>
+UC12 ..> V_Audit : <<include>>
+@enduml

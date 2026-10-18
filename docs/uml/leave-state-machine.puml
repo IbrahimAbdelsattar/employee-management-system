@@ -1,0 +1,36 @@
+@startuml NexaHR_Leave_State_Machine
+skinparam shadowing false
+
+[*] --> PENDING : Employee submits valid request\n[pending_days += totalDays]
+
+state PENDING {
+  PENDING : Awaiting Manager or HR review
+  PENDING : Paid quota reserved in pending_days
+}
+
+state APPROVED {
+  APPROVED : Authorized by Manager / HR
+  APPROVED : Paid quota deducted in used_days
+  APPROVED : deducted_from_balance = true
+}
+
+state REJECTED {
+  REJECTED : Declined with rejection_reason
+  REJECTED : pending_days released
+  REJECTED : Final terminal state
+}
+
+state CANCELLED {
+  CANCELLED : Cancelled by Employee or HR
+  CANCELLED : Quota restored to available balance
+  CANCELLED : Final terminal state
+}
+
+PENDING --> APPROVED : Manager / HR Approves\n[used_days += totalDays;\npending_days -= totalDays]
+PENDING --> REJECTED : Manager / HR Rejects\n[pending_days -= totalDays]
+PENDING --> CANCELLED : Employee Cancels before review\n[pending_days -= totalDays]
+APPROVED --> CANCELLED : Valid Cancellation of Approved Leave\n[used_days -= totalDays]
+
+REJECTED --> [*]
+CANCELLED --> [*]
+@enduml

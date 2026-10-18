@@ -1,0 +1,46 @@
+@startuml NexaHR_Leave_Activity_Diagram
+skinparam shadowing false
+start
+:Employee submits Leave Request\n(leaveTypeId, startDate, endDate, isHalfDay, reason);
+:System loads Organization Settings (Friday,Saturday)\nand Public Holidays from PostgreSQL;
+:Execute calculateWorkingLeaveDays();
+if (Dates valid & workingDays > 0?) then (no)
+  :Return HTTP 400 Bad Request\n(Invalid date range or weekend-only);
+  stop
+else (yes)
+endif
+:Query existing PENDING / APPROVED leave_requests;
+:Execute doDateRangesOverlap();
+if (Overlaps existing leave?) then (yes)
+  :Return HTTP 400 Bad Request\n(Overlapping Leave Prevented);
+  stop
+else (no)
+endif
+:Execute applyLeaveBalanceTransition('SUBMIT');
+if (Sufficient paid leave balance?) then (no)
+  :Return HTTP 400 Bad Request\n(Insufficient entitlement balance);
+  stop
+else (yes)
+endif
+:Increment leave_entitlements.pending_days;
+:Insert PENDING record into leave_requests;
+:Create persistent Notification for Manager;
+:Write LEAVE_SUBMIT to audit_logs;
+:Manager or HR reviews request;
+if (Authorized via canApproveLeaveForEmployee()?) then (no)
+  :Return HTTP 403 Forbidden;
+  stop
+else (yes)
+endif
+if (Manager Decision?) then (APPROVE)
+  :Move days from pending_days to used_days;
+  :Update leave_requests.status = 'APPROVED';
+  :Notify Employee (LEAVE_APPROVED);
+else (REJECT)
+  :Release pending_days (used_days unchanged);
+  :Update leave_requests.status = 'REJECTED';
+  :Notify Employee (LEAVE_REJECTED);
+endif
+:Write decision to audit_logs;
+stop
+@enduml

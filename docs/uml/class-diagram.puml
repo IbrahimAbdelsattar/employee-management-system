@@ -1,0 +1,158 @@
+@startuml NexaHR_Class_Diagram
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+class Profile {
+  +id: number
+  +uid: string
+  +email: string
+  +fullName: string
+  +accountStatus: string
+  +inviteToken: string?
+}
+
+class UserRole {
+  +id: number
+  +profileId: number
+  +role: RoleType
+}
+
+class Department {
+  +id: number
+  +code: string
+  +name: string
+  +managerEmployeeId: number?
+  +budgetEgp: number
+  +isArchived: boolean
+}
+
+class JobTitle {
+  +id: number
+  +code: string
+  +title: string
+  +departmentId: number
+  +level: string
+  +minSalaryEgp: number
+  +maxSalaryEgp: number
+}
+
+class Employee {
+  +id: number
+  +employeeNumber: string
+  +profileId: number?
+  +firstName: string
+  +lastName: string
+  +email: string
+  +departmentId: number
+  +jobTitleId: number
+  +managerId: number?
+  +employmentStatus: string
+  +hireDate: string
+  +onboardingProgress: number
+}
+
+class AttendanceRecord {
+  +id: number
+  +employeeId: number
+  +attendanceDate: string
+  +checkInUtc: Date
+  +checkOutUtc: Date?
+  +workedMinutes: number
+  +lateMinutes: number
+  +status: AttendanceStatus
+}
+
+class LeaveEntitlement {
+  +id: number
+  +employeeId: number
+  +leaveTypeId: number
+  +year: number
+  +allocatedDays: number
+  +usedDays: number
+  +pendingDays: number
+}
+
+class LeaveRequest {
+  +id: number
+  +employeeId: number
+  +leaveTypeId: number
+  +startDate: string
+  +endDate: string
+  +totalDays: number
+  +status: LeaveStatus
+  +reviewedByEmployeeId: number?
+}
+
+class Task {
+  +id: number
+  +title: string
+  +assigneeEmployeeId: number
+  +creatorEmployeeId: number
+  +priority: string
+  +status: TaskStatus
+  +dueDate: string
+}
+
+class PerformanceReview {
+  +id: number
+  +employeeId: number
+  +reviewerEmployeeId: number
+  +reviewCycle: string
+  +overallRating: number
+  +status: ReviewStatus
+}
+
+class CompensationRecord {
+  +id: number
+  +employeeId: number
+  +baseSalaryEgp: number
+  +housingAllowanceEgp: number
+  +transportAllowanceEgp: number
+  +standardDeductionEgp: number
+  +isCurrent: boolean
+}
+
+class PayrollPeriod {
+  +id: number
+  +periodCode: string
+  +status: string
+  +totalGrossEgp: number
+  +totalNetEgp: number
+}
+
+class PayrollItem {
+  +id: number
+  +payrollPeriodId: number
+  +employeeId: number
+  +grossPayEgp: number
+  +netPayEgp: number
+  +payslipRef: string
+}
+
+class DomainRulesService <<service>> {
+  +validateEmployeeInput()
+  +hasCircularManagerRelationship()
+  +calculateWorkingLeaveDays()
+  +canTransitionLeaveStatus()
+  +applyLeaveBalanceTransition()
+  +calculateAttendanceMetrics()
+  +calculatePayrollItem()
+  +canPerformAction()
+  +canAccessEmployeeCompensation()
+  +canApproveLeaveForEmployee()
+}
+
+Profile "1" -- "1..*" UserRole : has >
+Profile "0..1" -- "0..1" Employee : linked to >
+Department "1" -- "0..*" Employee : employs >
+Department "1" -- "1..*" JobTitle : defines >
+Employee "0..1" -- "0..*" Employee : manages >
+Employee "1" -- "0..*" AttendanceRecord : logs >
+Employee "1" -- "0..*" LeaveEntitlement : holds >
+Employee "1" -- "0..*" LeaveRequest : submits >
+Employee "1" -- "0..*" Task : assigned >
+Employee "1" -- "0..*" PerformanceReview : evaluated in >
+Employee "1" -- "1..*" CompensationRecord : compensated by >
+PayrollPeriod "1" -- "1..*" PayrollItem : contains >
+Employee "1" -- "0..*" PayrollItem : receives >
+@enduml

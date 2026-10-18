@@ -1,0 +1,26 @@
+@startuml NexaHR_Employee_Creation_Sequence
+skinparam shadowing false
+actor "HR Manager" as HR
+participant "EmployeesPage (React)" as UI
+participant "Express API (server.ts)" as API
+participant "Auth & RBAC (auth.ts / rules.ts)" as RBAC
+database "PostgreSQL (Drizzle ORM)" as DB
+
+HR -> UI : Submit "Add Employee" Modal
+UI -> API : POST /api/employees (Bearer Token + Payload)
+API -> RBAC : requireAuth() & canPerformAction(roles, 'MANAGE_EMPLOYEES')
+RBAC --> API : true
+API -> DB : SELECT email, employee_number FROM employees
+API -> RBAC : validateEmployeeInput(payload, existingEmails)
+RBAC --> API : { valid: true, errors: [] }
+API -> RBAC : generateNextEmployeeNumber(existingNumbers)
+RBAC --> API : "NW-EMP-026"
+API -> DB : INSERT INTO employees (...) RETURNING *
+API -> DB : INSERT INTO leave_entitlements (2026 quotas)
+API -> DB : INSERT INTO compensation_records (Base + Allowances)
+API -> DB : INSERT INTO onboarding_checklists & onboarding_tasks
+API -> DB : INSERT INTO audit_logs (action='EMPLOYEE_CREATE')
+API --> UI : 201 Created (newEmployee)
+UI -> API : GET /api/bootstrap
+API --> UI : Refreshed Workspace State
+@enduml

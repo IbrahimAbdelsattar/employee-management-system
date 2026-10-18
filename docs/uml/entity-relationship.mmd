@@ -1,0 +1,110 @@
+erDiagram
+    PROFILES ||--o{ USER_ROLES : "has_roles"
+    PROFILES ||--o| EMPLOYEES : "activates"
+    PROFILES ||--o{ AUDIT_LOGS : "triggers"
+    DEPARTMENTS ||--o{ JOB_TITLES : "contains"
+    DEPARTMENTS ||--o{ EMPLOYEES : "assigns"
+    DEPARTMENTS ||--o{ TASKS : "scopes"
+    JOB_TITLES ||--o{ EMPLOYEES : "classifies"
+    EMPLOYEES ||--o{ EMPLOYEES : "manages"
+    WORK_SHIFTS ||--o{ SHIFT_ASSIGNMENTS : "schedules"
+    EMPLOYEES ||--o{ SHIFT_ASSIGNMENTS : "rostered_in"
+    EMPLOYEES ||--o{ ATTENDANCE_RECORDS : "logs"
+    ATTENDANCE_RECORDS ||--o{ ATTENDANCE_CORRECTION_REQUESTS : "adjusted_by"
+    LEAVE_TYPES ||--o{ LEAVE_ENTITLEMENTS : "defines"
+    LEAVE_TYPES ||--o{ LEAVE_REQUESTS : "categorizes"
+    EMPLOYEES ||--o{ LEAVE_ENTITLEMENTS : "holds"
+    EMPLOYEES ||--o{ LEAVE_REQUESTS : "submits"
+    EMPLOYEES ||--o{ TASKS : "assigned_to"
+    TASKS ||--o{ TASK_COMMENTS : "discusses"
+    EMPLOYEES ||--o{ PERFORMANCE_GOALS : "pursues"
+    EMPLOYEES ||--o{ PERFORMANCE_REVIEWS : "evaluated_in"
+    EMPLOYEES ||--o{ ONBOARDING_CHECKLISTS : "undergoes"
+    ONBOARDING_CHECKLISTS ||--o{ ONBOARDING_TASKS : "comprises"
+    EMPLOYEES ||--o{ EMPLOYEE_DOCUMENTS : "owns"
+    EMPLOYEES ||--o{ COMPENSATION_RECORDS : "receives"
+    PAYROLL_PERIODS ||--o{ PAYROLL_ITEMS : "generates"
+    EMPLOYEES ||--o{ PAYROLL_ITEMS : "paid_via"
+    EMPLOYEES ||--o{ NOTIFICATIONS : "notified_by"
+
+    PROFILES {
+        serial id PK
+        text uid UK
+        text email UK
+        text full_name
+        text account_status
+    }
+    USER_ROLES {
+        serial id PK
+        integer profile_id FK
+        text role
+    }
+    DEPARTMENTS {
+        serial id PK
+        text code UK
+        text name UK
+        integer manager_employee_id
+        numeric budget_egp
+        boolean is_archived
+    }
+    JOB_TITLES {
+        serial id PK
+        text code UK
+        text title UK
+        integer department_id FK
+        numeric min_salary_egp
+        numeric max_salary_egp
+    }
+    EMPLOYEES {
+        serial id PK
+        text employee_number UK
+        integer profile_id FK
+        text first_name
+        text last_name
+        text email UK
+        integer department_id FK
+        integer job_title_id FK
+        integer manager_id FK
+        text employment_status
+        text hire_date
+    }
+    ATTENDANCE_RECORDS {
+        serial id PK
+        integer employee_id FK
+        text attendance_date
+        timestamp check_in_utc
+        timestamp check_out_utc
+        integer worked_minutes
+        text status
+    }
+    LEAVE_REQUESTS {
+        serial id PK
+        integer employee_id FK
+        integer leave_type_id FK
+        text start_date
+        text end_date
+        numeric total_days
+        text status
+    }
+    COMPENSATION_RECORDS {
+        serial id PK
+        integer employee_id FK
+        numeric base_salary_egp
+        numeric housing_allowance_egp
+        boolean is_current
+    }
+    PAYROLL_PERIODS {
+        serial id PK
+        text period_code UK
+        text status
+        numeric total_gross_egp
+        numeric total_net_egp
+    }
+    PAYROLL_ITEMS {
+        serial id PK
+        integer payroll_period_id FK
+        integer employee_id FK
+        numeric gross_pay_egp
+        numeric net_pay_egp
+        text payslip_ref
+    }

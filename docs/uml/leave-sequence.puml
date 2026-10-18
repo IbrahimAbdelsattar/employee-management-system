@@ -1,0 +1,42 @@
+@startuml NexaHR_Leave_Sequence_Diagram
+skinparam shadowing false
+actor "Employee" as Emp
+actor "Department Manager" as Mgr
+participant "LeavePage (React UI)" as UI
+participant "Express API (server.ts)" as API
+participant "Domain Rules (rules.ts)" as Domain
+database "PostgreSQL (Drizzle ORM)" as DB
+
+== Phase 1: Leave Application Submission ==
+Emp -> UI : Fill & Submit Leave Form
+UI -> API : POST /api/leave/requests (Bearer Token)
+API -> DB : SELECT public_holidays, organization_settings
+API -> Domain : calculateWorkingLeaveDays(startDate, endDate)
+Domain --> API : { valid: true, totalDays: 2.0 }
+API -> DB : SELECT leave_requests WHERE employee_id = actor.employeeId
+API -> Domain : doDateRangesOverlap()
+Domain --> API : false
+API -> DB : SELECT leave_entitlements
+API -> Domain : applyLeaveBalanceTransition('SUBMIT')
+Domain --> API : { valid: true, pendingDays: +2.0 }
+API -> DB : UPDATE leave_entitlements SET pending_days
+API -> DB : INSERT INTO leave_requests (status='PENDING')
+API -> DB : INSERT INTO notifications (recipient=managerId)
+API -> DB : INSERT INTO audit_logs (action='LEAVE_SUBMIT')
+API --> UI : 201 Created (leaveRequest)
+
+== Phase 2: Manager Leave Approval ==
+Mgr -> UI : Click "Approve" on Pending Request
+UI -> API : PATCH /api/leave/requests/:id/decision { decision: 'APPROVED' }
+API -> Domain : canTransitionLeaveStatus('PENDING', 'APPROVED')
+Domain --> API : { allowed: true }
+API -> Domain : canApproveLeaveForEmployee(actor, targetEmployee)
+Domain --> API : { authorized: true }
+API -> Domain : applyLeaveBalanceTransition('APPROVE')
+Domain --> API : { usedDays: +2.0, pendingDays: -2.0 }
+API -> DB : UPDATE leave_entitlements SET used_days, pending_days
+API -> DB : UPDATE leave_requests SET status='APPROVED', deducted_from_balance=true
+API -> DB : INSERT INTO notifications (recipient=employeeId)
+API -> DB : INSERT INTO audit_logs (action='LEAVE_APPROVED')
+API --> UI : 200 OK (updatedLeaveRequest)
+@enduml
