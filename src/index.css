@@ -2,9 +2,14 @@
 
 @layer base {
   :root {
-    --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-sans: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Plus Jakarta Sans', 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-sans: 'Public Sans', 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'IBM Plex Sans Arabic', monospace;
+  }
+
+  html[dir="rtl"] {
+    --font-display: 'Cairo', 'IBM Plex Sans Arabic', sans-serif;
+    --font-sans: 'IBM Plex Sans Arabic', 'Cairo', sans-serif;
   }
 
   body {
@@ -24,6 +29,20 @@
   .font-mono, .tabular-nums {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Ensure tables and text alignment mirror naturally in RTL */
+  html[dir="rtl"] table.text-left {
+    text-align: right;
+  }
+
+  html[dir="rtl"] th.text-right,
+  html[dir="rtl"] td.text-right {
+    text-align: left;
+  }
+
+  html[dir="rtl"] .text-left {
+    text-align: right;
   }
 }
 

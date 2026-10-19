@@ -212,3 +212,26 @@ test('Role authorization and negative access control cases enforce strict RBAC',
   // Date formatting
   assert.equal(formatDateDDMMYYYY('2026-10-18'), '18/10/2026');
 });
+
+test('Egyptian Arabic (ar-EG) localization and RTL direction helpers resolve accurately', async () => {
+  const {
+    getDirectionForLocale,
+    translateDepartmentName,
+    translateJobTitle,
+    translateStatus,
+    translateRole,
+    translateLeaveType,
+  } = await import('./rules.ts');
+
+  assert.equal(getDirectionForLocale('ar'), 'rtl');
+  assert.equal(getDirectionForLocale('en'), 'ltr');
+
+  assert.equal(translateDepartmentName('Engineering', 'ar'), 'قطاع الهندسة والبرمجيات');
+  assert.equal(translateDepartmentName('Engineering', 'en'), 'Engineering');
+
+  assert.equal(translateJobTitle('Head of People & Culture', 'ar'), 'رئيس قطاع الموارد البشرية');
+  assert.equal(translateStatus('APPROVED', 'ar'), 'معتمد');
+  assert.equal(translateRole('HR_MANAGER', 'ar'), 'مدير الموارد البشرية');
+  assert.equal(translateLeaveType('Annual Leave', 'ar'), 'إجازة اعتيادية سنوية');
+});
+

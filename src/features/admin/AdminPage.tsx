@@ -1,100 +1,32 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { canPerformAction, formatDateDDMMYYYY, RoleType } from '../../domain/rules';
-import { Shield, Settings, Activity, UserPlus, Save } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import { formatDateDDMMYYYY, canPerformAction } from '../../domain/rules';
+import { KeyRound, ScrollText, Calendar, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
-
-type AdminTab = 'USERS' | 'SETTINGS' | 'AUDIT_LOGS';
 
 export const AdminPage: React.FC = () => {
   const { actor, workspace, apiFetch, refreshWorkspace } = useAuth();
-  const [tab, setTab] = useState<AdminTab>('USERS');
-
-  // Invite user form
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteName, setInviteName] = useState('');
-  const [inviteRole, setInviteRole] = useState<RoleType>('EMPLOYEE');
-  const [lastIssuedToken, setLastIssuedToken] = useState<string | null>(null);
-
-  // Org settings state
-  const [orgName, setOrgName] = useState(workspace?.organization?.organizationName || 'NexaWorks');
-  const [tagline, setTagline] = useState(
-    workspace?.organization?.tagline || 'People, Performance, Possibilities.'
-  );
-  const [timezone, setTimezone] = useState(workspace?.organization?.timezone || 'Africa/Cairo');
-  const [weekendDays, setWeekendDays] = useState(
-    workspace?.organization?.weekendDays || 'Friday,Saturday'
-  );
-  const [graceMinutes, setGraceMinutes] = useState(
-    String(workspace?.organization?.defaultGraceMinutes || 15)
-  );
+  const { t, trRole, trStatus } = useLanguage();
+  const [activeTab, setActiveTab] = useState<'users' | 'audit' | 'holidays'>('users');
 
   if (!actor || !workspace) return null;
 
-  const isSystemAdmin = canPerformAction(actor.roles, 'MANAGE_USERS_AND_ROLES');
+  const isSysAdmin = canPerformAction(actor.roles, 'MANAGE_USERS_AND_ROLES');
 
-  if (!isSystemAdmin) {
-    return (
-      <div className="bg-white border border-slate-200 rounded-xl p-8 text-center">
-        <h2 className="font-display text-lg font-bold text-slate-900">
-          System Administration Restricted
-        </h2>
-        <p className="text-xs text-slate-500 mt-1">
-          Only users assigned the SYSTEM_ADMIN role may access User Role Management, Organization Configuration, and Security Audit Logs.
-        </p>
-      </div>
-    );
-  }
-
-  const handleRoleUpdate = async (profileId: number, role: string, accountStatus: string) => {
+  const handleRoleChange = async (targetProfileId: number, newRole: string) => {
     try {
-      await apiFetch(`/api/admin/users/${profileId}/role`, {
+      await apiFetch(`/api/admin/users/${targetProfileId}/role`, {
         method: 'PATCH',
-        body: JSON.stringify({ role, accountStatus }),
+        body: JSON.stringify({ role: newRole }),
       });
-      toast.success('User role and account status updated in PostgreSQL');
       await refreshWorkspace();
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
-
-  const handleInviteUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await apiFetch('/api/admin/users/invite', {
-        method: 'POST',
-        body: JSON.stringify({
-          email: inviteEmail,
-          fullName: inviteName,
-          role: inviteRole,
-        }),
-      });
-      setLastIssuedToken(res.inviteToken);
-      setInviteEmail('');
-      setInviteName('');
-      toast.success(`Invitation generated: ${res.inviteToken}`);
-      await refreshWorkspace();
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
-
-  const handleSaveOrgSettings = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await apiFetch('/api/admin/settings', {
-        method: 'PUT',
-        body: JSON.stringify({
-          organizationName: orgName,
-          tagline,
-          timezone,
-          weekendDays,
-          defaultGraceMinutes: Number(graceMinutes),
-        }),
-      });
-      toast.success('Organization settings persisted and applied to domain workflows');
-      await refreshWorkspace();
+      toast.success(
+        t(
+          `Role updated to ${newRole} and recorded in audit trail`,
+          `تم تحديث الصلاحية إلى ${trRole(newRole)} وتسجيلها في سجل المراجعة`
+        )
+      );
     } catch (err: any) {
       toast.error(err.message);
     }
@@ -102,270 +34,182 @@ export const AdminPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold text-slate-900">
-          System Administration & Governance
-        </h1>
-        <p className="text-xs text-slate-500 mt-1">
-          Role-Based Access Control (RBAC), account invitations, organization policies, and immutable security audit logs
-        </p>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+            {t('System Administration & Security Audit', 'إدارة النظام وسجل المراجعة الأمنية')}
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            {t(
+              'Role-Based Access Control (RBAC), immutable audit logs, and NexaWorks Cairo holiday configuration',
+              'التحكم في الصلاحيات والأدوار (RBAC)، سجل المراجعة غير القابل للتعديل، والعطلات الرسمية'
+            )}
+          </p>
+        </div>
+
+        <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1">
+          <button
+            onClick={() => setActiveTab('users')}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+              activeTab === 'users' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {t('User Accounts & RBAC', 'حسابات المستخدمين والصلاحيات')} ({workspace.adminProfiles.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('audit')}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+              activeTab === 'audit' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {t('Audit Logs', 'سجل المراجعة')} ({workspace.adminAuditLogs.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('holidays')}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer ${
+              activeTab === 'holidays' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            {t('Official Holidays', 'العطلات الرسمية')} ({workspace.publicHolidays.length})
+          </button>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-lg w-fit">
-        <button
-          onClick={() => setTab('USERS')}
-          className={`px-4 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 ${
-            tab === 'USERS' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
-          }`}
-        >
-          <Shield className="w-3.5 h-3.5" />
-          <span>Users & RBAC Roles ({workspace.adminProfiles.length})</span>
-        </button>
-        <button
-          onClick={() => setTab('SETTINGS')}
-          className={`px-4 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 ${
-            tab === 'SETTINGS' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
-          }`}
-        >
-          <Settings className="w-3.5 h-3.5" />
-          <span>Organization Policies</span>
-        </button>
-        <button
-          onClick={() => setTab('AUDIT_LOGS')}
-          className={`px-4 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 ${
-            tab === 'AUDIT_LOGS' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
-          }`}
-        >
-          <Activity className="w-3.5 h-3.5" />
-          <span>Audit Log Viewer ({workspace.adminAuditLogs.length})</span>
-        </button>
-      </div>
-
-      {/* Tab 1: Users & RBAC */}
-      {tab === 'USERS' && (
-        <div className="space-y-6">
-          {/* Invite New Account Card */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6">
-            <h2 className="font-display text-base font-bold text-slate-900">
-              Issue Employee Account Invitation
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Generates a one-time invitation token for the Accept Invite flow. (External email delivery is not configured; token is displayed directly.)
-            </p>
-            <form onSubmit={handleInviteUser} className="mt-4 grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-              <input
-                type="text"
-                required
-                value={inviteName}
-                onChange={(e) => setInviteName(e.target.value)}
-                placeholder="Full Name (e.g. Hany Adel)"
-                className="px-3 py-2 border border-slate-200 rounded-lg"
-              />
-              <input
-                type="email"
-                required
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                placeholder="Work Email (hany@nexaworks.eg)"
-                className="px-3 py-2 border border-slate-200 rounded-lg"
-              />
-              <select
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value as RoleType)}
-                className="px-3 py-2 border border-slate-200 rounded-lg bg-white"
-              >
-                <option value="EMPLOYEE">EMPLOYEE</option>
-                <option value="DEPARTMENT_MANAGER">DEPARTMENT_MANAGER</option>
-                <option value="HR_MANAGER">HR_MANAGER</option>
-                <option value="SYSTEM_ADMIN">SYSTEM_ADMIN</option>
-              </select>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-[#4F46E5] text-white font-semibold rounded-lg flex items-center justify-center gap-1.5"
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                <span>Generate Invite</span>
-              </button>
-            </form>
-            {lastIssuedToken && (
-              <div className="mt-3 p-3 bg-indigo-50 border border-indigo-200 rounded-lg text-xs">
-                Invitation Token Generated:{' '}
-                <strong className="font-mono text-[#4F46E5]">{lastIssuedToken}</strong>
-              </div>
+      {activeTab === 'users' && (
+        <div className="bg-white border border-slate-200/90 rounded-xl shadow-2xs overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200/80 flex items-center justify-between bg-slate-50/50">
+            <div className="flex items-center gap-2">
+              <KeyRound className="w-4 h-4 text-[#4F46E5]" />
+              <h2 className="text-sm font-bold text-slate-900">
+                {t('Identity & Role Assignments', 'إدارة الهويات وتعيين الأدوار')}
+              </h2>
+            </div>
+            {!isSysAdmin && (
+              <span className="text-xs text-amber-700 bg-amber-50 px-2.5 py-1 rounded border border-amber-200 font-medium">
+                {t(
+                  'Read-Only: Only System Administrators can modify user roles',
+                  'للقراءة فقط: يمكن لمدير النظام فقط تعديل صلاحيات المستخدمين'
+                )}
+              </span>
             )}
           </div>
-
-          {/* User Accounts Table */}
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-500">
-                    <th className="py-3 px-4">Full Name</th>
-                    <th className="py-3 px-4">Email</th>
-                    <th className="py-3 px-4">Assigned RBAC Role</th>
-                    <th className="py-3 px-4">Account Status</th>
-                    <th className="py-3 px-4">Invite Token</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-xs">
-                  {workspace.adminProfiles.map((prof) => {
-                    const roleRow = workspace.adminUserRoles.find((r) => r.profileId === prof.id);
-                    const currentRole = roleRow?.role || 'EMPLOYEE';
-                    return (
-                      <tr key={prof.id} className="hover:bg-slate-50/70">
-                        <td className="py-3 px-4 font-semibold text-slate-900">{prof.fullName}</td>
-                        <td className="py-3 px-4 font-mono text-slate-600">{prof.email}</td>
-                        <td className="py-3 px-4">
-                          <select
-                            aria-label={`Role for ${prof.fullName}`}
-                            value={currentRole}
-                            onChange={(e) =>
-                              handleRoleUpdate(prof.id, e.target.value, prof.accountStatus)
-                            }
-                            className="px-2.5 py-1 border border-slate-200 rounded bg-white font-mono text-xs"
-                          >
-                            <option value="SYSTEM_ADMIN">SYSTEM_ADMIN</option>
-                            <option value="HR_MANAGER">HR_MANAGER</option>
-                            <option value="DEPARTMENT_MANAGER">DEPARTMENT_MANAGER</option>
-                            <option value="EMPLOYEE">EMPLOYEE</option>
-                          </select>
-                        </td>
-                        <td className="py-3 px-4">
-                          <select
-                            aria-label={`Account status for ${prof.fullName}`}
-                            value={prof.accountStatus}
-                            onChange={(e) =>
-                              handleRoleUpdate(prof.id, currentRole, e.target.value)
-                            }
-                            className="px-2.5 py-1 border border-slate-200 rounded bg-white font-mono text-xs"
-                          >
-                            <option value="ACTIVE">ACTIVE</option>
-                            <option value="INVITED">INVITED</option>
-                            <option value="DEACTIVATED">DEACTIVATED</option>
-                          </select>
-                        </td>
-                        <td className="py-3 px-4 font-mono text-slate-500">
-                          {prof.inviteToken || '—'}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 2: Organization Policies */}
-      {tab === 'SETTINGS' && (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 max-w-2xl">
-          <h2 className="font-display text-base font-bold text-slate-900">
-            Organization Profile & Operational Policies
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            Changes immediately govern leave working-day calculations and attendance grace periods.
-          </p>
-          <form onSubmit={handleSaveOrgSettings} className="mt-5 space-y-4 text-xs">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">Organization Name</label>
-                <input
-                  type="text"
-                  value={orgName}
-                  onChange={(e) => setOrgName(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">Tagline</label>
-                <input
-                  type="text"
-                  value={tagline}
-                  onChange={(e) => setTagline(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg"
-                />
-              </div>
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">Default Timezone</label>
-                <input
-                  type="text"
-                  value={timezone}
-                  onChange={(e) => setTimezone(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg font-mono"
-                />
-              </div>
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">
-                  Configured Weekend Days (Excluded from Leave)
-                </label>
-                <input
-                  type="text"
-                  value={weekendDays}
-                  onChange={(e) => setWeekendDays(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg font-mono"
-                />
-              </div>
-              <div>
-                <label className="block font-medium text-slate-700 mb-1">
-                  Default Attendance Grace Period (Minutes)
-                </label>
-                <input
-                  type="number"
-                  value={graceMinutes}
-                  onChange={(e) => setGraceMinutes(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg font-mono"
-                />
-              </div>
-            </div>
-            <div className="pt-3 border-t border-slate-100 flex justify-end">
-              <button
-                type="submit"
-                className="px-4 py-2 bg-[#4F46E5] text-white font-semibold rounded-lg flex items-center gap-1.5"
-              >
-                <Save className="w-3.5 h-3.5" />
-                <span>Save Organization Policies</span>
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Tab 3: Audit Logs */}
-      {tab === 'AUDIT_LOGS' && (
-        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-500">
-                  <th className="py-3 px-4">Timestamp</th>
-                  <th className="py-3 px-4">Actor</th>
-                  <th className="py-3 px-4">Role</th>
-                  <th className="py-3 px-4">Action</th>
-                  <th className="py-3 px-4">Entity</th>
-                  <th className="py-3 px-4">Summary</th>
+                <tr className="bg-slate-50 border-b border-slate-200/80 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                  <th className="py-3.5 px-5">{t('User Account', 'حساب المستخدم')}</th>
+                  <th className="py-3.5 px-4">{t('Current Role', 'الدور الحالي')}</th>
+                  <th className="py-3.5 px-4">{t('Status', 'الحالة')}</th>
+                  <th className="py-3.5 px-5 text-right">{t('Modify Role', 'تعديل الصلاحية')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
-                {workspace.adminAuditLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-slate-50/70">
-                    <td className="py-3 px-4 font-mono text-slate-500 whitespace-nowrap">
-                      {formatDateDDMMYYYY(String(log.createdAt).slice(0, 10))}{' '}
-                      {String(log.createdAt).slice(11, 19)}
+              <tbody className="divide-y divide-slate-200/60 text-sm">
+                {workspace.adminProfiles.map((u: any) => {
+                  const roleRow = workspace.adminUserRoles.find((r: any) => r.profileId === u.id);
+                  const currentRole = roleRow?.role || 'EMPLOYEE';
+                  return (
+                    <tr key={u.id} className="hover:bg-slate-50/80">
+                      <td className="py-3 px-5">
+                        <div className="font-semibold text-slate-900">{u.fullName}</div>
+                        <div className="text-xs font-mono text-slate-500">{u.email}</div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="px-2.5 py-0.5 rounded-md text-xs font-mono font-semibold bg-slate-100 text-slate-800 border border-slate-300">
+                          {trRole(currentRole)}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> {trStatus(u.accountStatus || 'ACTIVE')}
+                        </span>
+                      </td>
+                      <td className="py-3 px-5 text-right">
+                        <select
+                          disabled={!isSysAdmin || u.id === actor.profileId}
+                          value={currentRole}
+                          onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                          className="px-2.5 py-1.5 text-xs font-semibold border border-slate-300 rounded-lg bg-white disabled:opacity-50"
+                        >
+                          <option value="SYSTEM_ADMIN">{trRole('SYSTEM_ADMIN')}</option>
+                          <option value="HR_MANAGER">{trRole('HR_MANAGER')}</option>
+                          <option value="DEPARTMENT_MANAGER">{trRole('DEPARTMENT_MANAGER')}</option>
+                          <option value="EMPLOYEE">{trRole('EMPLOYEE')}</option>
+                        </select>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'audit' && (
+        <div className="bg-white border border-slate-200/90 rounded-xl shadow-2xs overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200/80 flex items-center gap-2 bg-slate-50/50">
+            <ScrollText className="w-4 h-4 text-[#4F46E5]" />
+            <h2 className="text-sm font-bold text-slate-900">
+              {t('Immutable System Audit Log', 'سجل المراجعة الأمنية للنظام (غير قابل للتعديل)')}
+            </h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200/80 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                  <th className="py-3.5 px-5">{t('Timestamp', 'التوقيت')}</th>
+                  <th className="py-3.5 px-4">{t('Actor', 'المستخدم')}</th>
+                  <th className="py-3.5 px-4">{t('Action', 'العملية')}</th>
+                  <th className="py-3.5 px-4">{t('Entity', 'الكيان')}</th>
+                  <th className="py-3.5 px-5">{t('Summary', 'ملخص العملية')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200/60 text-xs font-mono">
+                {workspace.adminAuditLogs.map((log: any) => (
+                  <tr key={log.id} className="hover:bg-slate-50/80">
+                    <td className="py-3 px-5 text-slate-500">
+                      {formatDateDDMMYYYY(log.createdAt)} {new Date(log.createdAt).toLocaleTimeString('en-GB')}
                     </td>
-                    <td className="py-3 px-4 font-semibold text-slate-900">{log.actorName}</td>
-                    <td className="py-3 px-4 font-mono text-slate-600">{log.actorRole}</td>
-                    <td className="py-3 px-4 font-mono font-semibold text-[#4F46E5]">{log.action}</td>
-                    <td className="py-3 px-4 font-mono text-slate-600">
+                    <td className="py-3 px-4 font-semibold text-slate-800">{log.actorName}</td>
+                    <td className="py-3 px-4 font-bold text-[#4F46E5]">{log.action}</td>
+                    <td className="py-3 px-4 text-slate-700">
                       {log.entityType} #{log.entityId}
                     </td>
-                    <td className="py-3 px-4 text-slate-700">{log.summary}</td>
+                    <td className="py-3 px-5 text-slate-600 max-w-md truncate">{log.summary}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'holidays' && (
+        <div className="bg-white border border-slate-200/90 rounded-xl shadow-2xs overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200/80 flex items-center gap-2 bg-slate-50/50">
+            <Calendar className="w-4 h-4 text-[#4F46E5]" />
+            <h2 className="text-sm font-bold text-slate-900">
+              {t('Egyptian Official Public Holidays (Africa/Cairo)', 'العطلات الرسمية لجمهورية مصر العربية (القاهرة)')}
+            </h2>
+          </div>
+          <div className="divide-y divide-slate-200/60">
+            {workspace.publicHolidays.map((h: any) => (
+              <div key={h.id} className="px-6 py-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-bold text-slate-900">{h.name}</p>
+                  <p className="text-xs text-slate-500">
+                    {t(
+                      'Excluded automatically from working-day leave deductions',
+                      'تُستثنى تلقائياً من خصم رصيد الإجازات عند حساب أيام العمل الفعلية'
+                    )}
+                  </p>
+                </div>
+                <span className="font-mono text-sm font-bold text-[#4F46E5] bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-200">
+                  {formatDateDDMMYYYY(h.date)}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       )}

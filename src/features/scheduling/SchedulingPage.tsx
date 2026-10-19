@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { canPerformAction, formatDateDDMMYYYY } from '../../domain/rules';
-import { CalendarClock, Plus, UserCheck } from 'lucide-react';
+import { Plus, UserCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const SchedulingPage: React.FC = () => {
   const { actor, workspace, apiFetch, refreshWorkspace } = useAuth();
+  const { t } = useLanguage();
   const [shiftModalOpen, setShiftModalOpen] = useState(false);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
 
@@ -38,7 +40,7 @@ export const SchedulingPage: React.FC = () => {
           isOvernight,
         }),
       });
-      toast.success(`Work shift "${name}" created`);
+      toast.success(t(`Work shift "${name}" created`, `تم إنشاء وردية العمل "${name}" بنجاح`));
       setShiftModalOpen(false);
       await refreshWorkspace();
     } catch (err: any) {
@@ -56,7 +58,9 @@ export const SchedulingPage: React.FC = () => {
           shiftId: Number(assignShiftId),
         }),
       });
-      toast.success('Employee shift assignment updated');
+      toast.success(
+        t('Employee shift assignment updated', 'تم تحديث وردية الموظف بنجاح')
+      );
       setAssignModalOpen(false);
       await refreshWorkspace();
     } catch (err: any) {
@@ -69,10 +73,13 @@ export const SchedulingPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-slate-900">
-            Shifts & Work Schedules
+            {t('Shifts & Work Schedules', 'إدارة الورديات وجداول العمل')}
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Configure standard, flexible, and overnight shifts with grace period rules and public holiday calendar
+            {t(
+              'Configure standard, flexible, and overnight shifts with grace period rules and public holiday calendar',
+              'إعداد الورديات الصباحية والمرنة والليلية، فترات السماح، وتقويم العطلات الرسمية المصرية'
+            )}
           </p>
         </div>
 
@@ -87,7 +94,7 @@ export const SchedulingPage: React.FC = () => {
               className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5"
             >
               <UserCheck className="w-3.5 h-3.5" />
-              <span>Assign Shift</span>
+              <span>{t('Assign Shift', 'تسكين موظف في وردية')}</span>
             </button>
           )}
           {canManageShifts && (
@@ -96,7 +103,7 @@ export const SchedulingPage: React.FC = () => {
               className="px-3.5 py-2 bg-[#4F46E5] hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>New Work Shift</span>
+              <span>{t('New Work Shift', 'إنشاء وردية جديدة')}</span>
             </button>
           )}
         </div>
@@ -112,16 +119,28 @@ export const SchedulingPage: React.FC = () => {
             <div key={shift.id} className="bg-white border border-slate-200 rounded-xl p-5">
               <div className="flex items-center justify-between text-xs text-slate-500">
                 <span className="font-mono font-semibold text-[#4F46E5]">{shift.code}</span>
-                <span>{shift.isOvernight ? 'OVERNIGHT SHIFT' : 'STANDARD SHIFT'}</span>
+                <span>
+                  {shift.isOvernight
+                    ? t('OVERNIGHT SHIFT', 'وردية ليلية')
+                    : t('STANDARD SHIFT', 'وردية قياسية')}
+                </span>
               </div>
               <h2 className="font-display text-base font-bold text-slate-900 mt-1">{shift.name}</h2>
               <p className="font-mono text-xl font-bold text-slate-900 mt-3">
                 {shift.startTime} – {shift.endTime}
               </p>
               <div className="mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-1">
-                <p>Grace Period: {shift.gracePeriodMinutes} minutes</p>
-                <p>Work Days: {shift.workDays}</p>
-                <p className="font-semibold text-slate-900">Active Roster: {assignedCount} employees</p>
+                <p>
+                  {t('Grace Period:', 'فترة السماح للحضور:')} {shift.gracePeriodMinutes}{' '}
+                  {t('minutes', 'دقيقة')}
+                </p>
+                <p>
+                  {t('Work Days:', 'أيام العمل:')} {shift.workDays}
+                </p>
+                <p className="font-semibold text-slate-900">
+                  {t('Active Roster:', 'الموظفون المسكنون:')} {assignedCount}{' '}
+                  {t('employees', 'موظف')}
+                </p>
               </div>
             </div>
           );
@@ -133,17 +152,17 @@ export const SchedulingPage: React.FC = () => {
         <div className="lg:col-span-2 bg-white border border-slate-200 rounded-xl overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100">
             <h2 className="font-display text-base font-bold text-slate-900">
-              Active Employee Shift Roster
+              {t('Active Employee Shift Roster', 'جدول تسكين الموظفين في الورديات')}
             </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-500">
-                  <th className="py-3 px-4">Employee</th>
-                  <th className="py-3 px-4">Assigned Shift</th>
-                  <th className="py-3 px-4">Hours (Cairo)</th>
-                  <th className="py-3 px-4">Effective From</th>
+                  <th className="py-3 px-4">{t('Employee', 'الموظف')}</th>
+                  <th className="py-3 px-4">{t('Assigned Shift', 'الوردية المسندة')}</th>
+                  <th className="py-3 px-4">{t('Hours (Cairo)', 'المواعيد (القاهرة)')}</th>
+                  <th className="py-3 px-4">{t('Effective From', 'ساري من تاريخ')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
@@ -175,10 +194,13 @@ export const SchedulingPage: React.FC = () => {
 
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <h2 className="font-display text-base font-bold text-slate-900 mb-1">
-            Official Public Holidays (2026)
+            {t('Official Public Holidays (2026)', 'العطلات الرسمية المصرية (٢٠٢٦)')}
           </h2>
           <p className="text-xs text-slate-500 mb-4">
-            Automatically excluded from paid leave deductions
+            {t(
+              'Automatically excluded from paid leave deductions',
+              'تُستبعد تلقائياً عند حساب أيام الإجازات المدفوعة'
+            )}
           </p>
           <div className="space-y-2.5">
             {workspace.publicHolidays.map((h) => (
@@ -200,10 +222,14 @@ export const SchedulingPage: React.FC = () => {
       {shiftModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
           <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6">
-            <h2 className="font-display text-lg font-bold text-slate-900">Create Work Shift</h2>
+            <h2 className="font-display text-lg font-bold text-slate-900">
+              {t('Create Work Shift', 'إنشاء وردية عمل جديدة')}
+            </h2>
             <form onSubmit={handleCreateShift} className="mt-4 space-y-4 text-xs">
               <div>
-                <label className="block font-medium text-slate-700 mb-1">Shift Name *</label>
+                <label className="block font-medium text-slate-700 mb-1">
+                  {t('Shift Name *', 'اسم الوردية *')}
+                </label>
                 <input
                   type="text"
                   required
@@ -214,7 +240,9 @@ export const SchedulingPage: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block font-medium text-slate-700 mb-1">Shift Code *</label>
+                <label className="block font-medium text-slate-700 mb-1">
+                  {t('Shift Code *', 'كود الوردية *')}
+                </label>
                 <input
                   type="text"
                   required
@@ -226,7 +254,9 @@ export const SchedulingPage: React.FC = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium text-slate-700 mb-1">Start Time</label>
+                  <label className="block font-medium text-slate-700 mb-1">
+                    {t('Start Time', 'وقت البداية')}
+                  </label>
                   <input
                     type="time"
                     value={startTime}
@@ -235,7 +265,9 @@ export const SchedulingPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-slate-700 mb-1">End Time</label>
+                  <label className="block font-medium text-slate-700 mb-1">
+                    {t('End Time', 'وقت النهاية')}
+                  </label>
                   <input
                     type="time"
                     value={endTime}
@@ -245,7 +277,9 @@ export const SchedulingPage: React.FC = () => {
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-slate-700 mb-1">Grace Period (Minutes)</label>
+                <label className="block font-medium text-slate-700 mb-1">
+                  {t('Grace Period (Minutes)', 'فترة السماح للتأخير (بالدقائق)')}
+                </label>
                 <input
                   type="number"
                   value={gracePeriodMinutes}
@@ -259,13 +293,13 @@ export const SchedulingPage: React.FC = () => {
                   onClick={() => setShiftModalOpen(false)}
                   className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg"
                 >
-                  Cancel
+                  {t('Cancel', 'إلغاء')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-[#4F46E5] text-white font-semibold rounded-lg"
                 >
-                  Save Shift
+                  {t('Save Shift', 'حفظ الوردية')}
                 </button>
               </div>
             </form>
@@ -277,10 +311,14 @@ export const SchedulingPage: React.FC = () => {
       {assignModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
           <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6">
-            <h2 className="font-display text-lg font-bold text-slate-900">Assign Employee Shift</h2>
+            <h2 className="font-display text-lg font-bold text-slate-900">
+              {t('Assign Employee Shift', 'تسكين موظف في وردية عمل')}
+            </h2>
             <form onSubmit={handleAssignShift} className="mt-4 space-y-4 text-xs">
               <div>
-                <label className="block font-medium text-slate-700 mb-1">Employee</label>
+                <label className="block font-medium text-slate-700 mb-1">
+                  {t('Employee', 'الموظف')}
+                </label>
                 <select
                   value={assignEmpId}
                   onChange={(e) => setAssignEmpId(Number(e.target.value))}
@@ -294,7 +332,9 @@ export const SchedulingPage: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block font-medium text-slate-700 mb-1">Work Shift</label>
+                <label className="block font-medium text-slate-700 mb-1">
+                  {t('Work Shift', 'الوردية')}
+                </label>
                 <select
                   value={assignShiftId}
                   onChange={(e) => setAssignShiftId(Number(e.target.value))}
@@ -313,13 +353,13 @@ export const SchedulingPage: React.FC = () => {
                   onClick={() => setAssignModalOpen(false)}
                   className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg"
                 >
-                  Cancel
+                  {t('Cancel', 'إلغاء')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-[#4F46E5] text-white font-semibold rounded-lg"
                 >
-                  Assign Shift
+                  {t('Assign Shift', 'تأكيد التسكين')}
                 </button>
               </div>
             </form>

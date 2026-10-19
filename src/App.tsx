@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AppShell } from './components/layout/AppShell';
 import { LoginPage } from './features/auth/LoginPage';
 import { DashboardPage } from './features/dashboard/DashboardPage';
@@ -19,18 +20,21 @@ import { AdminPage } from './features/admin/AdminPage';
 
 const AppRoutes: React.FC = () => {
   const { actor, workspace, loading } = useAuth();
+  const { t, isRtl } = useLanguage();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6">
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6" dir={isRtl ? 'rtl' : 'ltr'}>
         <div className="text-center space-y-2">
           <div className="w-10 h-10 rounded-xl bg-[#4F46E5] text-white font-display font-bold text-lg flex items-center justify-center mx-auto">
             N
           </div>
           <p className="text-sm font-display font-semibold text-slate-900">
-            Loading NexaHR Enterprise Workspace...
+            {t('Loading NexaHR Enterprise Workspace...', 'جاري تحميل منصة نكسا إتش آر للشركات...')}
           </p>
-          <p className="text-xs text-slate-500">Synchronizing authorized PostgreSQL records</p>
+          <p className="text-xs text-slate-500">
+            {t('Synchronizing authorized PostgreSQL records', 'جاري مزامنة سجلات قاعدة بيانات PostgreSQL المعتمدة')}
+          </p>
         </div>
       </div>
     );
@@ -38,42 +42,49 @@ const AppRoutes: React.FC = () => {
 
   if (!actor || !workspace) {
     return (
-      <Routes>
-        <Route path="*" element={<LoginPage />} />
-      </Routes>
+      <>
+        <Toaster position={isRtl ? 'top-left' : 'top-right'} dir={isRtl ? 'rtl' : 'ltr'} richColors />
+        <Routes>
+          <Route path="*" element={<LoginPage />} />
+        </Routes>
+      </>
     );
   }
 
   return (
-    <AppShell>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/employees" element={<EmployeesPage />} />
-        <Route path="/employees/:id" element={<EmployeesPage />} />
-        <Route path="/organization" element={<OrganizationPage />} />
-        <Route path="/attendance" element={<AttendancePage />} />
-        <Route path="/leave" element={<LeavePage />} />
-        <Route path="/scheduling" element={<SchedulingPage />} />
-        <Route path="/tasks" element={<TasksPage />} />
-        <Route path="/performance" element={<PerformancePage />} />
-        <Route path="/onboarding" element={<OnboardingPage />} />
-        <Route path="/payroll" element={<PayrollPage />} />
-        <Route path="/reports" element={<ReportsPage />} />
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </AppShell>
+    <>
+      <Toaster position={isRtl ? 'top-left' : 'top-right'} dir={isRtl ? 'rtl' : 'ltr'} richColors />
+      <AppShell>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/employees" element={<EmployeesPage />} />
+          <Route path="/employees/:id" element={<EmployeesPage />} />
+          <Route path="/organization" element={<OrganizationPage />} />
+          <Route path="/attendance" element={<AttendancePage />} />
+          <Route path="/leave" element={<LeavePage />} />
+          <Route path="/scheduling" element={<SchedulingPage />} />
+          <Route path="/tasks" element={<TasksPage />} />
+          <Route path="/performance" element={<PerformancePage />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
+          <Route path="/payroll" element={<PayrollPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </AppShell>
+    </>
   );
 };
 
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Toaster position="top-right" richColors />
-        <AppRoutes />
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }

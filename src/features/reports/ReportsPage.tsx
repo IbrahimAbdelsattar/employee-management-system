@@ -1,175 +1,194 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { Download, BarChart3 } from 'lucide-react';
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
+  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
 } from 'recharts';
-import { Download, Printer } from 'lucide-react';
-import { toast } from 'sonner';
 
 export const ReportsPage: React.FC = () => {
   const { actor, workspace } = useAuth();
-  const [deptFilter, setDeptFilter] = useState('ALL');
+  const { t, trDept, trTitle, trStatus } = useLanguage();
 
   if (!actor || !workspace) return null;
 
-  const filteredEmployees = workspace.employees.filter((e) =>
-    deptFilter === 'ALL' ? true : e.departmentId === Number(deptFilter)
-  );
-
-  // Department Headcount & Budget Analytics
-  const deptReport = workspace.departments.map((d) => {
-    const emps = workspace.employees.filter((e) => e.departmentId === d.id);
-    const active = emps.filter((e) => e.employmentStatus === 'ACTIVE').length;
+  const deptSalaryData = workspace.departments.map((d: any) => {
+    const emps = workspace.employees.filter((e: any) => e.departmentId === d.id);
     return {
-      department: d.name,
-      total: emps.length,
-      active,
-      budgetM: Number((Number(d.budgetEgp) / 1000000).toFixed(2)),
+      name: trDept(d.name).replace(' & ', ' '),
+      headcount: emps.length,
+      budgetEGP: Number(d.budgetEgp || 1200000),
     };
   });
 
-  // Hiring Growth by Year
-  const years = ['2022', '2023', '2024', '2025'];
-  const growthReport = years.map((yr) => ({
-    year: yr,
-    hires: filteredEmployees.filter((e) => String(e.hireDate).startsWith(yr)).length,
-  }));
-
-  const handleExportReportCsv = () => {
-    const rows = [
-      ['Department', 'Total Staff', 'Active Staff', 'Annual Budget (M EGP)'].join(','),
-      ...deptReport.map((r) => [r.department, r.total, r.active, r.budgetM].join(',')),
-    ].join('\n');
-    const blob = new Blob([rows], { type: 'text/csv;charset=utf-8;' });
+  const exportCsv = (filename: string, headers: string[], rows: (string | number)[][]) => {
+    const csv = [headers, ...rows].map((r) => r.map((v) => `"${v}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'NexaWorks_Workforce_Analytics.csv';
+    a.download = filename;
     a.click();
-    toast.success('Workforce analytics report exported to CSV');
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
         <div>
-          <h1 className="font-display text-2xl font-bold text-slate-900">
-            Enterprise Reports & Analytics
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+            {t('Executive Reports & Analytics', 'التقارير التنفيذية والتحليلات')}
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Real-time aggregations computed from authorized PostgreSQL domain records
+          <p className="text-sm text-slate-500 mt-1">
+            {t(
+              'Real-time database aggregations and one-click CSV data exports for compliance and auditing',
+              'إحصائيات فورية من قاعدة البيانات وتصدير مباشر لملفات CSV لأغراض المراجعة والامتثال'
+            )}
           </p>
         </div>
+      </div>
 
-        <div className="flex items-center gap-2">
-          <select
-            aria-label="Filter reports by department"
-            value={deptFilter}
-            onChange={(e) => setDeptFilter(e.target.value)}
-            className="px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white"
-          >
-            <option value="ALL">All Departments</option>
-            {workspace.departments.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
+      {/* Export Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-2xs flex flex-col justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-slate-900">
+              {t('Master Employee Roster CSV', 'سجل الموظفين الشامل (CSV)')}
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              {t(
+                `Complete export of ${workspace.employees.length} employees with department, title, status, and hire dates.`,
+                `تصدير كامل لبيانات ${workspace.employees.length} موظفاً شاملاً القسم، المسمى الوظيفي، الحالة، وتاريخ التعيين.`
+              )}
+            </p>
+          </div>
           <button
-            onClick={handleExportReportCsv}
-            className="px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium rounded-lg flex items-center gap-1.5"
+            onClick={() =>
+              exportCsv(
+                'nexaworks-employees.csv',
+                ['Code', 'Full Name', 'Email', 'Title', 'Status', 'Hire Date'],
+                workspace.employees.map((e: any) => {
+                  const titleObj = workspace.jobTitles.find((j: any) => j.id === e.jobTitleId);
+                  return [
+                    e.employeeNumber,
+                    `${e.firstName} ${e.lastName}`,
+                    e.email,
+                    trTitle(titleObj?.title),
+                    trStatus(e.employmentStatus),
+                    e.hireDate,
+                  ];
+                })
+              )
+            }
+            className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export CSV</span>
+            <Download className="w-3.5 h-3.5" /> {t('Download Roster CSV', 'تحميل كشف الموظفين CSV')}
           </button>
+        </div>
+
+        <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-2xs flex flex-col justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-slate-900">
+              {t('Attendance & Punctuality Log CSV', 'سجل الحضور والالتزام بالمواعيد (CSV)')}
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              {t(
+                `Export all ${workspace.attendanceRecords.length} attendance logs with check-in timestamps, late minutes, and worked duration.`,
+                `تصدير كافة سجلات الحضور (${workspace.attendanceRecords.length} سجل) مع أوقات الحضور، دقائق التأخير، وساعات العمل.`
+              )}
+            </p>
+          </div>
           <button
-            onClick={() => window.print()}
-            className="px-3.5 py-2 bg-slate-900 text-white text-xs font-medium rounded-lg flex items-center gap-1.5"
+            onClick={() =>
+              exportCsv(
+                'nexaworks-attendance.csv',
+                ['Date', 'Employee ID', 'Status', 'Worked Mins', 'Late Mins'],
+                workspace.attendanceRecords.map((a: any) => [
+                  a.attendanceDate,
+                  a.employeeId,
+                  trStatus(a.status),
+                  a.workedMinutes || 0,
+                  a.lateMinutes || 0,
+                ])
+              )
+            }
+            className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 cursor-pointer"
           >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Print View</span>
+            <Download className="w-3.5 h-3.5" /> {t('Download Attendance CSV', 'تحميل سجل الحضور CSV')}
+          </button>
+        </div>
+
+        <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-2xs flex flex-col justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-slate-900">
+              {t('Leave Utilization Report CSV', 'تقرير استهلاك الإجازات (CSV)')}
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              {t(
+                `Export all ${workspace.leaveRequests.length} leave applications with approval status and working day counts.`,
+                `تصدير كافة طلبات الإجازات (${workspace.leaveRequests.length} طلب) مع حالة الاعتماد وعدد أيام العمل المحسوبة.`
+              )}
+            </p>
+          </div>
+          <button
+            onClick={() =>
+              exportCsv(
+                'nexaworks-leaves.csv',
+                ['Employee ID', 'Leave Type ID', 'Start Date', 'End Date', 'Days', 'Status'],
+                workspace.leaveRequests.map((l: any) => [
+                  l.employeeId,
+                  l.leaveTypeId,
+                  l.startDate,
+                  l.endDate,
+                  l.totalDays,
+                  trStatus(l.status),
+                ])
+              )
+            }
+            className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" /> {t('Download Leave CSV', 'تحميل تقرير الإجازات CSV')}
           </button>
         </div>
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h2 className="font-display text-base font-bold text-slate-900 mb-4">
-            Department Headcount vs. Active Staff
-          </h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={deptReport}>
-                <XAxis dataKey="department" tick={{ fontSize: 12 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Bar dataKey="total" name="Total Assigned" fill="#0F172A" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="active" name="Active Status" fill="#4F46E5" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+      {/* Departmental Cost Chart */}
+      <div className="bg-white border border-slate-200/90 rounded-xl p-6 shadow-2xs">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-sm font-bold text-slate-900">
+              {t('Allocated Annual Budget by Department (EGP)', 'الميزانية السنوية المخصصة حسب القسم (ج.م)')}
+            </h2>
+            <p className="text-xs text-slate-500">
+              {t(
+                'Aggregated directly from active PostgreSQL department records',
+                'مجمعة مباشرة من سجلات الأقسام النشطة في قاعدة البيانات'
+              )}
+            </p>
           </div>
+          <BarChart3 className="w-5 h-5 text-[#4F46E5]" />
         </div>
-
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <h2 className="font-display text-base font-bold text-slate-900 mb-4">
-            Annual Workforce Hiring Cohort Trend
-          </h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={growthReport}>
-                <XAxis dataKey="year" tick={{ fontSize: 12 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="hires"
-                  name="New Hires"
-                  stroke="#06B6D4"
-                  strokeWidth={3}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+        <div className="h-72" dir="ltr">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={deptSalaryData} margin={{ top: 10, right: 20, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} />
+              <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
+              <Tooltip
+                formatter={(value: any) => [
+                  `${Number(value).toLocaleString()} EGP`,
+                  t('Department Budget', 'ميزانية القسم'),
+                ]}
+              />
+              <Bar dataKey="budgetEGP" fill="#4F46E5" radius={[6, 6, 0, 0]} barSize={44} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-      </div>
-
-      {/* Summary Table */}
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100">
-          <h2 className="font-display text-base font-bold text-slate-900">
-            Departmental Resource & Budget Matrix
-          </h2>
-        </div>
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-500">
-              <th className="py-3 px-4">Department</th>
-              <th className="py-3 px-4 text-right">Total Records</th>
-              <th className="py-3 px-4 text-right">Active Headcount</th>
-              <th className="py-3 px-4 text-right">Annual Budget (Million EGP)</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100 text-xs">
-            {deptReport.map((row) => (
-              <tr key={row.department} className="hover:bg-slate-50/70">
-                <td className="py-3 px-4 font-semibold text-slate-900">{row.department}</td>
-                <td className="py-3 px-4 text-right font-mono">{row.total}</td>
-                <td className="py-3 px-4 text-right font-mono font-semibold text-[#4F46E5]">
-                  {row.active}
-                </td>
-                <td className="py-3 px-4 text-right font-mono">EGP {row.budgetM}M</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </div>
   );

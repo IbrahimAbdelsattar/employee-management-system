@@ -1,14 +1,15 @@
 flowchart TB
     subgraph Client["Presentation & Application Layer (React 19 + TypeScript)"]
-        UI_Shell["AppShell & Role Switcher"]
-        UI_Pages["14 Feature Modules\n(Dashboard, Employees, Org, Attendance,\nLeave, Shifts, Tasks, Performance,\nOnboarding, Payroll, Reports, Admin)"]
+        UI_Shell["AppShell, Role Switcher & Arabic RTL / English LTR Toggle"]
+        UI_Pages["12 Feature Modules\n(Dashboard, Employees, Org, Attendance,\nLeave, Shifts, Tasks, Performance,\nOnboarding, Payroll, Reports, Admin)"]
         AuthCtx["AuthContext & Workspace Store"]
+        LangCtx["LanguageContext (en LTR / ar-EG RTL)"]
     end
 
     subgraph Server["Backend API & Domain Layer (Node.js + Express on Port 3000)"]
         AuthMW["requireAuth Middleware\n(Firebase Admin + HMAC Session Verification)"]
         API_Routes["RESTful Controller Routes\n(/api/bootstrap, /api/employees, /api/leave, /api/payroll, ...)"]
-        DomainRules["Pure Domain Engine (src/domain/rules.ts)\nRBAC Matrix, Leave State Machine, Hierarchy Checks"]
+        DomainRules["Pure Domain Engine (src/domain/rules.ts)\nRBAC Matrix, Leave State Machine, Hierarchy Checks & ar-EG Translators"]
         AuditSvc["Audit & Notification Dispatcher"]
     end
 
@@ -18,7 +19,10 @@ flowchart TB
     end
 
     UI_Shell --> AuthCtx
+    UI_Shell --> LangCtx
     UI_Pages --> AuthCtx
+    UI_Pages --> LangCtx
+    LangCtx --> DomainRules
     AuthCtx -- "HTTPS JSON + Bearer Token" --> AuthMW
     AuthMW --> API_Routes
     API_Routes --> DomainRules

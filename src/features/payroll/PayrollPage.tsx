@@ -1,192 +1,213 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { canPerformAction, formatDateDDMMYYYY } from '../../domain/rules';
-import { Wallet, ShieldAlert, CheckCircle2, Printer, Plus } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
+import { canPerformAction, calculatePayrollItem, formatDateDDMMYYYY } from '../../domain/rules';
+import { Lock, CheckCircle2, Calculator } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const PayrollPage: React.FC = () => {
   const { actor, workspace, apiFetch, refreshWorkspace } = useAuth();
-  const [selectedPeriodId, setSelectedPeriodId] = useState<number>(2);
-  const [selectedPayslip, setSelectedPayslip] = useState<any | null>(null);
+  const { t, trDept, trStatus } = useLanguage();
+  const [selectedPeriodId, setSelectedPeriodId] = useState<number>(
+    workspace?.payrollPeriods[0]?.id || 1
+  );
+  const [simBase, setSimBase] = useState(30000);
+  const [simAllowance, setSimAllowance] = useState(4500);
+  const [simBonus, setSimBonus] = useState(2000);
+  const [simDeduction, setSimDeduction] = useState(500);
 
   if (!actor || !workspace) return null;
 
   const canManagePayroll = canPerformAction(actor.roles, 'MANAGE_PAYROLL');
-  const isDeptManagerOnly =
-    actor.roles.includes('DEPARTMENT_MANAGER') && !canManagePayroll;
-
-  const activePeriod =
-    workspace.payrollPeriods.find((p) => p.id === selectedPeriodId) ||
+  const selectedPeriod =
+    workspace.payrollPeriods.find((r: any) => r.id === Number(selectedPeriodId)) ||
     workspace.payrollPeriods[0];
 
-  const periodItems = workspace.payrollItems.filter(
-    (item) => item.payrollPeriodId === activePeriod?.id
-  );
+  const visibleItems = workspace.payrollItems.filter((item: any) => {
+    if (selectedPeriod && item.payrollPeriodId !== selectedPeriod.id) return false;
+    return true;
+  });
 
-  const handlePeriodStatusTransition = async (periodId: number, status: 'APPROVED' | 'PAID') => {
+  const simResult = calculatePayrollItem({
+    baseSalaryEgp: simBase,
+    housingAllowanceEgp: simAllowance,
+    otherAllowanceEgp: simBonus,
+    standardDeductionEgp: simDeduction,
+  });
+
+  const handleStatusChange = async (periodId: number, status: string) => {
     try {
       await apiFetch(`/api/payroll/periods/${periodId}/status`, {
         method: 'PATCH',
         body: JSON.stringify({ status }),
       });
-      toast.success(`Payroll period transitioned to ${status}`);
       await refreshWorkspace();
+      toast.success(t(`Payroll cycle marked as ${status}`, `تم تحديث حالة مسير الرواتب إلى ${trStatus(status)}`));
     } catch (err: any) {
       toast.error(err.message);
     }
   };
 
+  const totalGross = visibleItems.reduce((acc: number, i: any) => acc + Number(i.grossPayEgp || 0), 0);
+  const totalNet = visibleItems.reduce((acc: number, i: any) => acc + Number(i.netPayEgp || 0), 0);
+
   return (
     <div className="space-y-6">
-      {/* Header & Academic Simulation Notice */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
         <div>
-          <h1 className="font-display text-2xl font-bold text-slate-900">
-            Compensation & Payroll Simulation
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+            {t('Compensation & Payroll Summary', 'إدارة الرواتب والأجور والتعويضات')}
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            Self-contained academic payroll engine (Gross Pay = Base + Allowances; Net Pay = Gross - Deductions) · Currency: EGP
+          <p className="text-sm text-slate-500 mt-1">
+            {t(
+              'Egyptian Pound (EGP) monthly payroll cycles, allowances, deductions, and employee payslips',
+              'مسير الرواتب الشهري بالجنيه المصري (EGP)، البدلات، الاستقطاعات، وقسائم الدفع للموظفين'
+            )}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <select
-            aria-label="Select Payroll Period"
-            value={activePeriod?.id || ''}
+            value={selectedPeriod?.id || ''}
             onChange={(e) => setSelectedPeriodId(Number(e.target.value))}
-            className="px-3 py-2 text-xs font-mono border border-slate-200 rounded-lg bg-white font-semibold"
+            className="px-3.5 py-2 text-xs font-semibold border border-slate-300 rounded-lg bg-white"
           >
-            {workspace.payrollPeriods.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.periodCode} — {p.name} ({p.status})
+            {workspace.payrollPeriods.map((r: any) => (
+              <option key={r.id} value={r.id}>
+                {r.periodCode} ({trStatus(r.status)})
               </option>
             ))}
           </select>
-
-          {canManagePayroll && activePeriod?.status === 'DRAFT' && (
-            <button
-              onClick={() => handlePeriodStatusTransition(activePeriod.id, 'APPROVED')}
-              className="px-4 py-2 bg-[#4F46E5] hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg whitespace-nowrap"
-            >
-              Approve Payroll Period
-            </button>
-          )}
-          {canManagePayroll && activePeriod?.status === 'APPROVED' && (
-            <button
-              onClick={() => handlePeriodStatusTransition(activePeriod.id, 'PAID')}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg whitespace-nowrap"
-            >
-              Mark Simulated Paid
-            </button>
-          )}
         </div>
       </div>
 
-      {/* Explicit RBAC Notice if Department Manager */}
-      {isDeptManagerOnly && (
-        <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-4 flex items-center gap-3 text-xs text-amber-900">
-          <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
-          <span>
-            <strong>RBAC Confidentiality Policy Enforced:</strong> Department Managers cannot view
-            other employees&apos; confidential compensation or payroll records. Only your personal
-            payslip is displayed below.
-          </span>
-        </div>
-      )}
+      {/* Summary Banner */}
+      {selectedPeriod && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-2xs">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              {t('Payroll Cycle', 'دورة الرواتب')}
+            </span>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-xl font-bold font-mono text-slate-900">{selectedPeriod.periodCode}</span>
+              <span
+                className={`px-2.5 py-0.5 rounded-md text-xs font-bold border ${
+                  selectedPeriod.status === 'PAID' || selectedPeriod.status === 'APPROVED'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    : 'bg-amber-50 text-amber-700 border-amber-200'
+                }`}
+              >
+                {trStatus(selectedPeriod.status)}
+              </span>
+            </div>
+          </div>
 
-      {/* Summary KPIs (If HR/Admin) */}
-      {canManagePayroll && activePeriod && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Total Gross Payroll</span>
-            <p className="font-display text-2xl font-bold text-slate-900 tabular-nums mt-2">
-              EGP {Number(activePeriod.totalGrossEgp).toLocaleString()}
-            </p>
-            <p className="text-xs text-slate-500 mt-1">{activePeriod.employeeCount} Active Employees</p>
+          <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-2xs">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              {t('Total Gross Payroll', 'إجمالي الاستحقاقات (Gross)')}
+            </span>
+            <div className="mt-2 text-2xl font-bold font-mono text-slate-900">
+              {totalGross.toLocaleString()} <span className="text-xs font-normal text-slate-500">EGP</span>
+            </div>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Total Allowances</span>
-            <p className="font-display text-2xl font-bold text-emerald-700 tabular-nums mt-2">
-              + EGP {Number(activePeriod.totalAllowancesEgp).toLocaleString()}
-            </p>
-            <p className="text-xs text-slate-500 mt-1">Housing, Transport & Other</p>
+
+          <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-2xs">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              {t('Total Net Disbursed', 'صافي الرواتب المنصرفة (Net)')}
+            </span>
+            <div className="mt-2 text-2xl font-bold font-mono text-[#4F46E5]">
+              {totalNet.toLocaleString()} <span className="text-xs font-normal text-indigo-500">EGP</span>
+            </div>
           </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Total Deductions</span>
-            <p className="font-display text-2xl font-bold text-rose-600 tabular-nums mt-2">
-              - EGP {Number(activePeriod.totalDeductionsEgp).toLocaleString()}
-            </p>
-            <p className="text-xs text-slate-500 mt-1">Simulated Deductions</p>
-          </div>
-          <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Total Net Disbursement</span>
-            <p className="font-display text-2xl font-bold text-[#4F46E5] tabular-nums mt-2">
-              EGP {Number(activePeriod.totalNetEgp).toLocaleString()}
-            </p>
-            <p className="text-xs text-slate-500 mt-1">Status: {activePeriod.status}</p>
+
+          <div className="bg-white border border-slate-200/90 rounded-xl p-5 shadow-2xs flex flex-col justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              {t('Cycle Governance', 'اعتماد المسير')}
+            </span>
+            {canManagePayroll && selectedPeriod.status !== 'PAID' ? (
+              <button
+                onClick={() =>
+                  handleStatusChange(
+                    selectedPeriod.id,
+                    selectedPeriod.status === 'DRAFT' ? 'APPROVED' : 'PAID'
+                  )
+                }
+                className="mt-2 w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold inline-flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Lock className="w-3.5 h-3.5" />{' '}
+                {selectedPeriod.status === 'DRAFT'
+                  ? t('Approve Payroll Run', 'اعتماد مسير الرواتب')
+                  : t('Mark as Disbursed (PAID)', 'تأكيد الصرف النهائي')}
+              </button>
+            ) : (
+              <div className="mt-2 text-xs text-slate-600 flex items-center gap-1.5 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                {t('Pay Date:', 'تاريخ الصرف:')} {formatDateDDMMYYYY(selectedPeriod.payDate)}
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* Payslip Items Table */}
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-          <h2 className="font-display text-base font-bold text-slate-900">
-            {canManagePayroll ? `Organization Payroll Register (${activePeriod?.periodCode})` : 'My Personal Payslips'}
+      <div className="bg-white border border-slate-200/90 rounded-xl shadow-2xs overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-200/80 flex items-center justify-between">
+          <h2 className="text-sm font-bold text-slate-900">
+            {canManagePayroll
+              ? t('Organization Payroll Register', 'سجل رواتب الموظفين بالشركة')
+              : t('My Personal Payslip', 'قسيمة راتبي الشخصية')}
           </h2>
-          <span className="text-xs font-mono text-slate-500">
-            Payment Date: {formatDateDDMMYYYY(activePeriod?.paymentDate)}
+          <span className="text-xs text-slate-500 font-mono">
+            {visibleItems.length} {t('records', 'سجلات')}
           </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-500">
-                <th className="py-3 px-4">Payslip Ref</th>
-                <th className="py-3 px-4">Employee</th>
-                <th className="py-3 px-4 text-right">Base Salary</th>
-                <th className="py-3 px-4 text-right">Allowances</th>
-                <th className="py-3 px-4 text-right">Gross Pay</th>
-                <th className="py-3 px-4 text-right">Deductions</th>
-                <th className="py-3 px-4 text-right">Net Pay (EGP)</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4 text-right">Payslip</th>
+              <tr className="bg-slate-50 border-b border-slate-200/80 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                <th className="py-3.5 px-5">{t('Employee', 'الموظف')}</th>
+                <th className="py-3.5 px-4 text-right">{t('Base Salary', 'الراتب الأساسي')}</th>
+                <th className="py-3.5 px-4 text-right">{t('Allowances', 'البدلات')}</th>
+                <th className="py-3.5 px-4 text-right">{t('Gross Pay', 'إجمالي الاستحقاق')}</th>
+                <th className="py-3.5 px-4 text-right">{t('Deductions', 'الخصومات والاستقطاعات')}</th>
+                <th className="py-3.5 px-4">{t('Status', 'الحالة')}</th>
+                <th className="py-3.5 px-5 text-right">{t('Net Pay (EGP)', 'صافي الراتب (EGP)')}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-xs">
-              {periodItems.map((item) => {
-                const emp = workspace.employees.find((e) => e.id === item.employeeId);
+            <tbody className="divide-y divide-slate-200/60 text-sm">
+              {visibleItems.map((item: any) => {
+                const emp = workspace.employees.find((e: any) => e.id === item.employeeId);
+                const dept = workspace.departments.find((d: any) => d.id === emp?.departmentId);
                 return (
-                  <tr key={item.id} className="hover:bg-slate-50/70">
-                    <td className="py-3 px-4 font-mono text-[#4F46E5] font-medium">
-                      {item.payslipRef}
+                  <tr key={item.id} className="hover:bg-slate-50/80">
+                    <td className="py-3 px-5">
+                      <div className="font-semibold text-slate-900">
+                        {emp ? `${emp.firstName} ${emp.lastName}` : '—'}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {emp?.employeeNumber} · {trDept(dept?.name)}
+                      </div>
                     </td>
-                    <td className="py-3 px-4 font-semibold text-slate-900">
-                      {emp ? `${emp.firstName} ${emp.lastName}` : `#${item.employeeId}`}
-                    </td>
-                    <td className="py-3 px-4 text-right font-mono tabular-nums">
+                    <td className="py-3 px-4 text-right font-mono text-xs text-slate-700">
                       {Number(item.baseSalaryEgp).toLocaleString()}
                     </td>
-                    <td className="py-3 px-4 text-right font-mono tabular-nums text-emerald-700">
+                    <td className="py-3 px-4 text-right font-mono text-xs text-emerald-700">
                       +{Number(item.allowancesEgp).toLocaleString()}
                     </td>
-                    <td className="py-3 px-4 text-right font-mono tabular-nums font-semibold">
+                    <td className="py-3 px-4 text-right font-mono text-xs font-semibold text-slate-900">
                       {Number(item.grossPayEgp).toLocaleString()}
                     </td>
-                    <td className="py-3 px-4 text-right font-mono tabular-nums text-rose-600">
+                    <td className="py-3 px-4 text-right font-mono text-xs text-rose-600">
                       -{Number(item.deductionsEgp).toLocaleString()}
                     </td>
-                    <td className="py-3 px-4 text-right font-mono tabular-nums font-bold text-slate-900">
-                      EGP {Number(item.netPayEgp).toLocaleString()}
+                    <td className="py-3 px-4">
+                      <span className="px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        {trStatus(item.paymentStatus)}
+                      </span>
                     </td>
-                    <td className="py-3 px-4 font-mono font-semibold">{item.paymentStatus}</td>
-                    <td className="py-3 px-4 text-right">
-                      <button
-                        onClick={() => setSelectedPayslip({ item, emp, period: activePeriod })}
-                        className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded text-xs font-medium"
-                      >
-                        View Payslip
-                      </button>
+                    <td className="py-3 px-5 text-right font-mono text-sm font-bold text-[#4F46E5]">
+                      {Number(item.netPayEgp).toLocaleString()} EGP
                     </td>
                   </tr>
                 );
@@ -196,91 +217,82 @@ export const PayrollPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Payslip Statement Modal */}
-      {selectedPayslip && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-              <div>
-                <span className="font-mono text-xs text-[#4F46E5] font-semibold">
-                  {selectedPayslip.item.payslipRef}
-                </span>
-                <h2 className="font-display text-lg font-bold text-slate-900">
-                  NexaWorks SAE — Simulated Payslip
-                </h2>
-              </div>
-              <button
-                onClick={() => window.print()}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-medium flex items-center gap-1.5"
-              >
-                <Printer className="w-3.5 h-3.5" />
-                <span>Print</span>
-              </button>
-            </div>
-
-            <div className="mt-4 space-y-3 text-xs">
-              <div className="grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-lg">
-                <div>
-                  <span className="text-slate-400 block">Employee</span>
-                  <span className="font-semibold text-slate-900">
-                    {selectedPayslip.emp?.firstName} {selectedPayslip.emp?.lastName} ({selectedPayslip.emp?.employeeNumber})
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block">Payroll Period</span>
-                  <span className="font-semibold text-slate-900">{selectedPayslip.period?.name}</span>
-                </div>
-              </div>
-
-              <div className="space-y-2 pt-2">
-                <div className="flex justify-between py-1.5 border-b border-slate-100">
-                  <span className="text-slate-600">Base Monthly Salary</span>
-                  <span className="font-mono font-semibold">
-                    EGP {Number(selectedPayslip.item.baseSalaryEgp).toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-100">
-                  <span className="text-slate-600">Total Allowances (Housing + Transport)</span>
-                  <span className="font-mono text-emerald-700">
-                    + EGP {Number(selectedPayslip.item.allowancesEgp).toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-200 font-semibold">
-                  <span className="text-slate-900">Gross Pay (Base + Allowances)</span>
-                  <span className="font-mono text-slate-900">
-                    EGP {Number(selectedPayslip.item.grossPayEgp).toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between py-1.5 border-b border-slate-100">
-                  <span className="text-slate-600">Standard & Leave Deductions</span>
-                  <span className="font-mono text-rose-600">
-                    - EGP {Number(selectedPayslip.item.deductionsEgp).toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between py-2.5 bg-indigo-50/60 px-3 rounded-lg font-bold text-sm">
-                  <span className="text-slate-900">Net Pay (Gross - Deductions)</span>
-                  <span className="font-mono text-[#4F46E5]">
-                    EGP {Number(selectedPayslip.item.netPayEgp).toLocaleString()}
-                  </span>
-                </div>
-              </div>
-
-              <p className="text-[11px] text-slate-400 pt-2">
-                Disclaimer: Academic Software Engineering II simulation payslip. Does not represent statutory tax filing or real banking transfer.
-              </p>
-
-              <div className="flex justify-end pt-3">
-                <button
-                  onClick={() => setSelectedPayslip(null)}
-                  className="px-4 py-2 bg-slate-900 text-white font-semibold rounded-lg"
-                >
-                  Close Payslip
-                </button>
-              </div>
-            </div>
+      {/* Live Formula Calculator */}
+      <div className="bg-slate-900 text-white rounded-xl p-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <Calculator className="w-5 h-5 text-cyan-400" />
+          <h3 className="text-sm font-bold">
+            {t(
+              'Egyptian Payroll Formula Simulator (Domain Rule Engine)',
+              'محاكي حساب صافي الراتب والبدلات والاستقطاعات في مصر'
+            )}
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-5">
+          <div>
+            <label className="block text-[11px] text-slate-400 uppercase mb-1">
+              {t('Base Salary (EGP)', 'الراتب الأساسي (ج.م)')}
+            </label>
+            <input
+              type="number"
+              value={simBase}
+              onChange={(e) => setSimBase(Number(e.target.value))}
+              className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 font-mono text-sm text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] text-slate-400 uppercase mb-1">
+              {t('Housing Allowance (EGP)', 'بدل السكن والانتقال (ج.م)')}
+            </label>
+            <input
+              type="number"
+              value={simAllowance}
+              onChange={(e) => setSimAllowance(Number(e.target.value))}
+              className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 font-mono text-sm text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] text-slate-400 uppercase mb-1">
+              {t('Bonuses (EGP)', 'المكافآت والحوافز (ج.م)')}
+            </label>
+            <input
+              type="number"
+              value={simBonus}
+              onChange={(e) => setSimBonus(Number(e.target.value))}
+              className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 font-mono text-sm text-white"
+            />
+          </div>
+          <div>
+            <label className="block text-[11px] text-slate-400 uppercase mb-1">
+              {t('Standard Deductions', 'الاستقطاعات والضرائب')}
+            </label>
+            <input
+              type="number"
+              value={simDeduction}
+              onChange={(e) => setSimDeduction(Number(e.target.value))}
+              className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 font-mono text-sm text-white"
+            />
           </div>
         </div>
-      )}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800 font-mono text-xs">
+          <div>
+            <span className="text-slate-400 block">{t('Gross Pay:', 'إجمالي الاستحقاق:')}</span>
+            <span className="text-base font-bold text-white">{simResult.grossPayEgp.toLocaleString()} EGP</span>
+          </div>
+          <div>
+            <span className="text-slate-400 block">{t('Total Allowances:', 'إجمالي البدلات:')}</span>
+            <span className="text-base font-bold text-emerald-400">+{simResult.allowancesEgp.toLocaleString()} EGP</span>
+          </div>
+          <div>
+            <span className="text-slate-400 block">{t('Total Deductions:', 'إجمالي الخصومات:')}</span>
+            <span className="text-base font-bold text-rose-400">-{simResult.deductionsEgp.toLocaleString()} EGP</span>
+          </div>
+          <div>
+            <span className="text-slate-400 block">{t('Final Net Pay:', 'صافي الراتب النهائي:')}</span>
+            <span className="text-lg font-bold text-cyan-400">{simResult.netPayEgp.toLocaleString()} EGP</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

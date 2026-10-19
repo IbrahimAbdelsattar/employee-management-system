@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { formatDateDDMMYYYY, calculateLeaveBalance } from '../../domain/rules';
 import {
   BarChart,
@@ -14,15 +15,9 @@ import {
   Cell,
 } from 'recharts';
 import {
-  Users,
-  Clock,
-  CalendarDays,
-  CheckSquare,
-  TrendingUp,
   Play,
   Square,
   ArrowUpRight,
-  ShieldAlert,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -30,6 +25,7 @@ const CHART_COLORS = ['#4F46E5', '#06B6D4', '#0F172A', '#16A34A', '#D97706'];
 
 export const DashboardPage: React.FC = () => {
   const { actor, workspace, apiFetch, refreshWorkspace } = useAuth();
+  const { t, trDept, trStatus, trRole, trLeaveType } = useLanguage();
   const navigate = useNavigate();
   const [checkingAttendance, setCheckingAttendance] = useState(false);
 
@@ -64,17 +60,23 @@ export const DashboardPage: React.FC = () => {
 
   // Department headcount chart data (derived from actual database records)
   const deptDistribution = workspace.departments.map((d) => ({
-    name: d.name,
+    name: trDept(d.name),
     count: activeEmployees.filter((e) => e.departmentId === d.id).length,
     budgetM: Number((Number(d.budgetEgp) / 1000000).toFixed(1)),
   }));
 
   // Employment status breakdown
   const statusBreakdown = [
-    { name: 'Active', value: allEmployees.filter((e) => e.employmentStatus === 'ACTIVE').length },
-    { name: 'On Leave', value: onLeaveEmployees.length },
-    { name: 'Probation', value: probationEmployees.length },
-    { name: 'Archived', value: allEmployees.filter((e) => e.employmentStatus === 'ARCHIVED').length },
+    {
+      name: t('Active', 'نشط'),
+      value: allEmployees.filter((e) => e.employmentStatus === 'ACTIVE').length,
+    },
+    { name: t('On Leave', 'في إجازة'), value: onLeaveEmployees.length },
+    { name: t('Probation', 'تحت الاختبار'), value: probationEmployees.length },
+    {
+      name: t('Archived', 'مؤرشف'),
+      value: allEmployees.filter((e) => e.employmentStatus === 'ARCHIVED').length,
+    },
   ].filter((s) => s.value > 0);
 
   const handleQuickAttendance = async () => {
@@ -85,13 +87,23 @@ export const DashboardPage: React.FC = () => {
           method: 'POST',
           body: JSON.stringify({ notes: 'Checked out from Dashboard shortcut' }),
         });
-        toast.success('Attendance check-out recorded in PostgreSQL');
+        toast.success(
+          t(
+            'Attendance check-out recorded in PostgreSQL',
+            'تم تسجيل الانصراف بنجاح في قاعدة البيانات'
+          )
+        );
       } else {
         await apiFetch('/api/attendance/check-in', {
           method: 'POST',
           body: JSON.stringify({ notes: 'Checked in from Dashboard shortcut' }),
         });
-        toast.success('Attendance check-in opened in PostgreSQL');
+        toast.success(
+          t(
+            'Attendance check-in opened in PostgreSQL',
+            'تم تسجيل الحضور وفتح الجلسة بنجاح'
+          )
+        );
       }
       await refreshWorkspace();
     } catch (err: any) {
@@ -114,24 +126,45 @@ export const DashboardPage: React.FC = () => {
       <div className="bg-white border border-slate-200 rounded-xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs text-slate-500">
-            <span>{primaryRole.replace('_', ' ')} VIEW</span>
+            <span>
+              {trRole(primaryRole)} {t('VIEW', '— عرض الصلاحية')}
+            </span>
             <span>·</span>
-            <span>{workspace.organization?.organizationName}</span>
+            <span>
+              {t(
+                workspace.organization?.organizationName || 'NexaWorks',
+                'شركة نكسا ووركس للتكنولوجيا'
+              )}
+            </span>
             <span>·</span>
-            <span>Timezone: {workspace.organization?.timezone}</span>
+            <span>
+              {t('Timezone:', 'التوقيت المحلي:')} {workspace.organization?.timezone}
+            </span>
           </div>
           <h1 className="font-display text-2xl font-bold text-slate-900 mt-1">
-            Welcome back, {actor.fullName}
+            {t(`Welcome back, ${actor.fullName}`, `أهلاً بك يا ${actor.fullName}`)}
           </h1>
           <p className="text-sm text-slate-600 mt-1">
             {primaryRole === 'SYSTEM_ADMIN' &&
-              'System-wide workforce metrics, security audit activity, and organizational governance.'}
+              t(
+                'System-wide workforce metrics, security audit activity, and organizational governance.',
+                'مؤشرات القوى العاملة على مستوى الشركة، سجل المراجعة الأمنية، وحوكمة النظام.'
+              )}
             {primaryRole === 'HR_MANAGER' &&
-              'Human Resources command center: employee lifecycle, leave entitlements, and payroll operations.'}
+              t(
+                'Human Resources command center: employee lifecycle, leave entitlements, and payroll operations.',
+                'مركز قيادة الموارد البشرية: شؤون العاملين، أرصدة الإجازات، وإدارة مسير المرتبات.'
+              )}
             {primaryRole === 'DEPARTMENT_MANAGER' &&
-              `Managing ${myTeamEmployees.length} team members across your reporting hierarchy.`}
+              t(
+                `Managing ${myTeamEmployees.length} team members across your reporting hierarchy.`,
+                `إدارة ومتابعة ${myTeamEmployees.length} موظفاً ضمن فريق عملك وهيكل الإدارة.`
+              )}
             {primaryRole === 'EMPLOYEE' &&
-              'Track your daily attendance, leave balances, assigned deliverables, and performance goals.'}
+              t(
+                'Track your daily attendance, leave balances, assigned deliverables, and performance goals.',
+                'تابع سجل حضورك اليومي، أرصدة إجازاتك، المهام المسندة إليك، وأهداف الأداء.'
+              )}
           </p>
         </div>
 
@@ -148,12 +181,12 @@ export const DashboardPage: React.FC = () => {
             {myOpenSession ? (
               <>
                 <Square className="w-3.5 h-3.5" />
-                <span>Check Out (Session Open)</span>
+                <span>{t('Check Out (Session Open)', 'تسجيل انصراف (الجلسة مفتوحة)')}</span>
               </>
             ) : (
               <>
                 <Play className="w-3.5 h-3.5" />
-                <span>Check In Now</span>
+                <span>{t('Check In Now', 'تسجيل حضور الآن')}</span>
               </>
             )}
           </button>
@@ -161,7 +194,7 @@ export const DashboardPage: React.FC = () => {
             onClick={() => navigate('/leave')}
             className="px-4 py-2.5 rounded-lg text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors whitespace-nowrap"
           >
-            Request Leave
+            {t('Request Leave', 'طلب إجازة')}
           </button>
         </div>
       </div>
@@ -170,39 +203,50 @@ export const DashboardPage: React.FC = () => {
       {primaryRole === 'SYSTEM_ADMIN' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Total Workforce Records</span>
+            <span className="text-xs text-slate-500">
+              {t('Total Workforce Records', 'إجمالي سجلات الموظفين')}
+            </span>
             <p className="font-display text-3xl font-bold text-slate-900 tabular-nums mt-2">
               {allEmployees.length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              {activeEmployees.length} Active · {allEmployees.length - activeEmployees.length} Archived
+              {activeEmployees.length} {t('Active', 'نشط')} ·{' '}
+              {allEmployees.length - activeEmployees.length} {t('Archived', 'مؤرشف')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Active Departments</span>
+            <span className="text-xs text-slate-500">
+              {t('Active Departments', 'الإدارات والقطاعات النشطة')}
+            </span>
             <p className="font-display text-3xl font-bold text-slate-900 tabular-nums mt-2">
               {workspace.departments.filter((d) => !d.isArchived).length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              {workspace.jobTitles.length} Configured Job Titles
+              {workspace.jobTitles.length} {t('Configured Job Titles', 'مسمى وظيفي معتمد')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Pending Approvals</span>
+            <span className="text-xs text-slate-500">
+              {t('Pending Approvals', 'طلبات بانتظار الاعتماد')}
+            </span>
             <p className="font-display text-3xl font-bold text-[#4F46E5] tabular-nums mt-2">
               {pendingLeaves.length + pendingCorrections.length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              {pendingLeaves.length} Leave · {pendingCorrections.length} Attendance
+              {pendingLeaves.length} {t('Leave', 'إجازة')} · {pendingCorrections.length}{' '}
+              {t('Attendance', 'تصحيح حضور')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Security Audit Events</span>
+            <span className="text-xs text-slate-500">
+              {t('Security Audit Events', 'أحداث سجل المراجعة الأمنية')}
+            </span>
             <p className="font-display text-3xl font-bold text-slate-900 tabular-nums mt-2">
               {workspace.adminAuditLogs.length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              {workspace.adminProfiles.length} Provisioned User Accounts
+              {workspace.adminProfiles.length}{' '}
+              {t('Provisioned User Accounts', 'حساب مستخدم مسجل')}
             </p>
           </div>
         </div>
@@ -211,39 +255,49 @@ export const DashboardPage: React.FC = () => {
       {primaryRole === 'HR_MANAGER' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Active Workforce</span>
+            <span className="text-xs text-slate-500">
+              {t('Active Workforce', 'القوة العاملة النشطة')}
+            </span>
             <p className="font-display text-3xl font-bold text-slate-900 tabular-nums mt-2">
               {activeEmployees.length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              {probationEmployees.length} in Probation Cohort
+              {probationEmployees.length} {t('in Probation Cohort', 'في فترة الاختبار')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Employees On Leave</span>
+            <span className="text-xs text-slate-500">
+              {t('Employees On Leave', 'موظفون في إجازة حالياً')}
+            </span>
             <p className="font-display text-3xl font-bold text-amber-600 tabular-nums mt-2">
               {onLeaveEmployees.length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              {pendingLeaves.length} Pending Leave Requests
+              {pendingLeaves.length} {t('Pending Leave Requests', 'طلبات إجازة قيد المراجعة')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Active Onboarding Checklists</span>
+            <span className="text-xs text-slate-500">
+              {t('Active Onboarding Checklists', 'قوائم التعيين الجارية')}
+            </span>
             <p className="font-display text-3xl font-bold text-[#4F46E5] tabular-nums mt-2">
               {workspace.onboardingChecklists.filter((c) => c.status === 'IN_PROGRESS').length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              {workspace.employeeDocuments.length} Verified HR Documents
+              {workspace.employeeDocuments.length}{' '}
+              {t('Verified HR Documents', 'مستندات مسوغات تعيين موثقة')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Current Monthly Payroll</span>
+            <span className="text-xs text-slate-500">
+              {t('Current Monthly Payroll', 'صافي مسير المرتبات الشهري')}
+            </span>
             <p className="font-display text-2xl font-bold text-slate-900 tabular-nums mt-2">
               EGP {Number(workspace.payrollPeriods[0]?.totalNetEgp || 0).toLocaleString()}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              Period: {workspace.payrollPeriods[0]?.periodCode} ({workspace.payrollPeriods[0]?.status})
+              {t('Period:', 'الفترة:')} {workspace.payrollPeriods[0]?.periodCode} (
+              {trStatus(workspace.payrollPeriods[0]?.status)})
             </p>
           </div>
         </div>
@@ -252,39 +306,49 @@ export const DashboardPage: React.FC = () => {
       {primaryRole === 'DEPARTMENT_MANAGER' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Team Headcount</span>
+            <span className="text-xs text-slate-500">
+              {t('Team Headcount', 'عدد أعضاء الفريق')}
+            </span>
             <p className="font-display text-3xl font-bold text-slate-900 tabular-nums mt-2">
               {myTeamEmployees.length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              Direct & Departmental Reports
+              {t('Direct & Departmental Reports', 'المرؤوسون المباشرون وأعضاء الإدارة')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Pending Team Leave Requests</span>
+            <span className="text-xs text-slate-500">
+              {t('Pending Team Leave Requests', 'طلبات إجازة الفريق المعلقة')}
+            </span>
             <p className="font-display text-3xl font-bold text-[#4F46E5] tabular-nums mt-2">
               {pendingLeaves.length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              Awaiting your approval decision
+              {t('Awaiting your approval decision', 'بانتظار قرار الاعتماد منك')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Active Team Tasks</span>
+            <span className="text-xs text-slate-500">
+              {t('Active Team Tasks', 'مهام الفريق الجارية')}
+            </span>
             <p className="font-display text-3xl font-bold text-slate-900 tabular-nums mt-2">
               {workspace.tasks.filter((t) => t.status !== 'COMPLETED').length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              {workspace.tasks.filter((t) => t.status === 'COMPLETED').length} Completed Deliverables
+              {workspace.tasks.filter((t) => t.status === 'COMPLETED').length}{' '}
+              {t('Completed Deliverables', 'مهام مكتملة')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Team Performance Goals</span>
+            <span className="text-xs text-slate-500">
+              {t('Team Performance Goals', 'أهداف الأداء للفريق')}
+            </span>
             <p className="font-display text-3xl font-bold text-emerald-600 tabular-nums mt-2">
               {workspace.performanceGoals.length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              {workspace.performanceReviews.length} Performance Reviews
+              {workspace.performanceReviews.length}{' '}
+              {t('Performance Reviews', 'تقييمات الأداء المسجلة')}
             </p>
           </div>
         </div>
@@ -293,39 +357,52 @@ export const DashboardPage: React.FC = () => {
       {primaryRole === 'EMPLOYEE' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Annual Leave Balance</span>
+            <span className="text-xs text-slate-500">
+              {t('Annual Leave Balance', 'رصيد الإجازات الاعتيادية')}
+            </span>
             <p className="font-display text-3xl font-bold text-[#4F46E5] tabular-nums mt-2">
-              {myLeaveBal.available} Days
+              {myLeaveBal.available} {t('Days', 'يوم')}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              {myLeaveBal.used} Used · {myLeaveBal.pending} Pending of {myLeaveBal.allocated}d
+              {myLeaveBal.used} {t('Used', 'مستهلك')} · {myLeaveBal.pending}{' '}
+              {t('Pending of', 'معلق من أصل')} {myLeaveBal.allocated}d
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">My Attendance Logs</span>
+            <span className="text-xs text-slate-500">
+              {t('My Attendance Logs', 'سجلات الحضور والانصراف')}
+            </span>
             <p className="font-display text-3xl font-bold text-slate-900 tabular-nums mt-2">
               {workspace.attendanceRecords.filter((a) => a.employeeId === actor.employeeId).length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              Status: {myOpenSession ? 'Checked In (Active)' : 'Checked Out'}
+              {t('Status:', 'الحالة:')}{' '}
+              {myOpenSession
+                ? t('Checked In (Active)', 'مسجل حضور (نشط)')
+                : t('Checked Out', 'مسجل انصراف')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Assigned Tasks</span>
+            <span className="text-xs text-slate-500">
+              {t('Assigned Tasks', 'المهام المسندة إليّ')}
+            </span>
             <p className="font-display text-3xl font-bold text-slate-900 tabular-nums mt-2">
               {workspace.tasks.filter((t) => t.assigneeEmployeeId === actor.employeeId).length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              Active sprint & operational tasks
+              {t('Active sprint & operational tasks', 'مهام تشغيلية ومشاريع جارية')}
             </p>
           </div>
           <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <span className="text-xs text-slate-500">Published Reviews</span>
+            <span className="text-xs text-slate-500">
+              {t('Published Reviews', 'تقييمات الأداء المنشورة')}
+            </span>
             <p className="font-display text-3xl font-bold text-emerald-600 tabular-nums mt-2">
               {workspace.performanceReviews.filter((r) => r.employeeId === actor.employeeId).length}
             </p>
             <p className="text-xs text-slate-500 mt-2">
-              Latest Rating: {workspace.performanceReviews[0]?.overallRating || '4.8'} / 5.0
+              {t('Latest Rating:', 'آخر تقييم:')}{' '}
+              {workspace.performanceReviews[0]?.overallRating || '4.8'} / 5.0
             </p>
           </div>
         </div>
@@ -337,27 +414,35 @@ export const DashboardPage: React.FC = () => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="font-display text-base font-bold text-slate-900">
-                Department Workforce Distribution
+                {t('Department Workforce Distribution', 'توزيع القوى العاملة حسب الإدارات')}
               </h2>
               <p className="text-xs text-slate-500">
-                Active headcount across NexaWorks organizational units
+                {t(
+                  'Active headcount across NexaWorks organizational units',
+                  'أعداد الموظفين النشطين في كل قطاع بشركة نكسا ووركس'
+                )}
               </p>
             </div>
             <button
               onClick={() => navigate('/organization')}
               className="text-xs font-medium text-[#4F46E5] hover:underline flex items-center gap-1"
             >
-              <span>View Org Chart</span>
+              <span>{t('View Org Chart', 'عرض الهيكل التنظيمي')}</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
-          <div className="h-64">
+          <div className="h-64" dir="ltr">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={deptDistribution}>
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="count" name="Active Employees" fill="#4F46E5" radius={[6, 6, 0, 0]} />
+                <Bar
+                  dataKey="count"
+                  name={t('Active Employees', 'الموظفون النشطون')}
+                  fill="#4F46E5"
+                  radius={[6, 6, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -365,12 +450,15 @@ export const DashboardPage: React.FC = () => {
 
         <div className="bg-white border border-slate-200 rounded-xl p-6">
           <h2 className="font-display text-base font-bold text-slate-900">
-            Employment Status Breakdown
+            {t('Employment Status Breakdown', 'توزيع حالات التوظيف')}
           </h2>
           <p className="text-xs text-slate-500 mb-4">
-            Real-time distribution from PostgreSQL employee records
+            {t(
+              'Real-time distribution from PostgreSQL employee records',
+              'إحصائية مباشرة من سجلات الموظفين في قاعدة البيانات'
+            )}
           </p>
-          <div className="h-52">
+          <div className="h-52" dir="ltr">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -391,10 +479,15 @@ export const DashboardPage: React.FC = () => {
             </ResponsiveContainer>
           </div>
           <div className="grid grid-cols-2 gap-2 mt-2">
-            {statusBreakdown.map((item, idx) => (
-              <div key={item.name} className="flex items-center justify-between text-xs px-2 py-1 bg-slate-50 rounded">
+            {statusBreakdown.map((item) => (
+              <div
+                key={item.name}
+                className="flex items-center justify-between text-xs px-2 py-1 bg-slate-50 rounded"
+              >
                 <span className="text-slate-600">{item.name}</span>
-                <span className="font-mono font-semibold text-slate-900 tabular-nums">{item.value}</span>
+                <span className="font-mono font-semibold text-slate-900 tabular-nums">
+                  {item.value}
+                </span>
               </div>
             ))}
           </div>
@@ -408,17 +501,17 @@ export const DashboardPage: React.FC = () => {
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <div>
               <h2 className="font-display text-base font-bold text-slate-900">
-                Leave Requests & Approvals
+                {t('Leave Requests & Approvals', 'طلبات الإجازات والاعتمادات')}
               </h2>
               <p className="text-xs text-slate-500">
-                Authorized leave workflow records
+                {t('Authorized leave workflow records', 'سجلات الإجازات ضمن نطاق صلاحياتك')}
               </p>
             </div>
             <button
               onClick={() => navigate('/leave')}
               className="text-xs font-medium text-[#4F46E5] hover:underline"
             >
-              Manage Leave
+              {t('Manage Leave', 'إدارة الإجازات')}
             </button>
           </div>
           <div className="divide-y divide-slate-100">
@@ -432,7 +525,8 @@ export const DashboardPage: React.FC = () => {
                       {emp ? `${emp.firstName} ${emp.lastName}` : `Employee #${req.employeeId}`}
                     </p>
                     <p className="text-slate-500 mt-0.5">
-                      {lt?.name} · {formatDateDDMMYYYY(req.startDate)} to {formatDateDDMMYYYY(req.endDate)} ({req.totalDays}d)
+                      {trLeaveType(lt?.name)} · {formatDateDDMMYYYY(req.startDate)} →{' '}
+                      {formatDateDDMMYYYY(req.endDate)} ({req.totalDays}d)
                     </p>
                   </div>
                   <span
@@ -444,7 +538,7 @@ export const DashboardPage: React.FC = () => {
                         : 'text-rose-600'
                     }`}
                   >
-                    {req.status}
+                    {trStatus(req.status)}
                   </span>
                 </div>
               );
@@ -452,22 +546,22 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Assigned Tasks & Upcoming Holidays */}
+        {/* Assigned Tasks & Deliverables */}
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
           <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <div>
               <h2 className="font-display text-base font-bold text-slate-900">
-                Priority Deliverables & Tasks
+                {t('Priority Deliverables & Tasks', 'المهام والتكليفات ذات الأولوية')}
               </h2>
               <p className="text-xs text-slate-500">
-                Active tasks across your authorized scope
+                {t('Active tasks across your authorized scope', 'المهام النشطة ضمن نطاق عملك')}
               </p>
             </div>
             <button
               onClick={() => navigate('/tasks')}
               className="text-xs font-medium text-[#4F46E5] hover:underline"
             >
-              Open Task Board
+              {t('Open Task Board', 'فتح لوحة المهام')}
             </button>
           </div>
           <div className="divide-y divide-slate-100">
@@ -475,14 +569,18 @@ export const DashboardPage: React.FC = () => {
               const assignee = allEmployees.find((e) => e.id === task.assigneeEmployeeId);
               return (
                 <div key={task.id} className="px-6 py-3.5 flex items-center justify-between text-xs">
-                  <div className="min-w-0 pr-4">
+                  <div className="min-w-0 pe-4">
                     <p className="font-semibold text-slate-900 truncate">{task.title}</p>
                     <p className="text-slate-500 mt-0.5">
-                      Assignee: {assignee ? `${assignee.firstName} ${assignee.lastName}` : 'Unassigned'} · Due {formatDateDDMMYYYY(task.dueDate)}
+                      {t('Assignee:', 'المكلف:')}{' '}
+                      {assignee
+                        ? `${assignee.firstName} ${assignee.lastName}`
+                        : t('Unassigned', 'غير معين')}{' '}
+                      · {t('Due', 'الاستحقاق')} {formatDateDDMMYYYY(task.dueDate)}
                     </p>
                   </div>
                   <span className="font-mono font-semibold text-slate-700 shrink-0">
-                    {task.status.replace('_', ' ')} ({task.progressPercent}%)
+                    {trStatus(task.status)} ({task.progressPercent}%)
                   </span>
                 </div>
               );

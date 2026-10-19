@@ -21,31 +21,35 @@ import {
   Menu,
   X,
   ShieldCheck,
+  Globe,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { formatDateDDMMYYYY, RoleType } from '../../domain/rules';
 
 interface NavItem {
-  label: string;
+  labelEn: string;
+  labelAr: string;
   path: string;
   icon: React.FC<{ className?: string }>;
   allowedRoles?: RoleType[];
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-  { label: 'Employees', path: '/employees', icon: Users },
-  { label: 'Organization', path: '/organization', icon: Building2 },
-  { label: 'Attendance', path: '/attendance', icon: Clock },
-  { label: 'Leave', path: '/leave', icon: CalendarDays },
-  { label: 'Scheduling', path: '/scheduling', icon: CalendarClock },
-  { label: 'Tasks', path: '/tasks', icon: CheckSquare },
-  { label: 'Performance', path: '/performance', icon: TrendingUp },
-  { label: 'Onboarding & Lifecycle', path: '/onboarding', icon: UserCheck },
-  { label: 'Payroll & Compensation', path: '/payroll', icon: Wallet },
-  { label: 'Reports & Analytics', path: '/reports', icon: BarChart3 },
+  { labelEn: 'Dashboard', labelAr: 'لوحة التحكم الرئيسية', path: '/dashboard', icon: LayoutDashboard },
+  { labelEn: 'Employees', labelAr: 'دليل الموظفين', path: '/employees', icon: Users },
+  { labelEn: 'Organization', labelAr: 'الهيكل التنظيمي والإدارات', path: '/organization', icon: Building2 },
+  { labelEn: 'Attendance', labelAr: 'الحضور والانصراف', path: '/attendance', icon: Clock },
+  { labelEn: 'Leave', labelAr: 'الإجازات والأرصدة', path: '/leave', icon: CalendarDays },
+  { labelEn: 'Scheduling', labelAr: 'الورديات ومواعيد العمل', path: '/scheduling', icon: CalendarClock },
+  { labelEn: 'Tasks', labelAr: 'المهام والتكليفات', path: '/tasks', icon: CheckSquare },
+  { labelEn: 'Performance', labelAr: 'تقييم الأداء والأهداف', path: '/performance', icon: TrendingUp },
+  { labelEn: 'Onboarding & Lifecycle', labelAr: 'التعيين وإخلاء الطرف', path: '/onboarding', icon: UserCheck },
+  { labelEn: 'Payroll & Compensation', labelAr: 'المرتبات والأجور', path: '/payroll', icon: Wallet },
+  { labelEn: 'Reports & Analytics', labelAr: 'التقارير والإحصائيات', path: '/reports', icon: BarChart3 },
   {
-    label: 'Administration',
+    labelEn: 'Administration',
+    labelAr: 'إدارة النظام والصلاحيات',
     path: '/admin',
     icon: Settings,
     allowedRoles: ['SYSTEM_ADMIN'],
@@ -53,14 +57,35 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 const DEMO_ACCOUNTS = [
-  { label: 'System Admin (CTO)', email: 'admin@nexaworks.eg', role: 'SYSTEM_ADMIN' },
-  { label: 'HR Manager (People Lead)', email: 'hr@nexaworks.eg', role: 'HR_MANAGER' },
-  { label: 'Dept Manager (VP Eng)', email: 'manager@nexaworks.eg', role: 'DEPARTMENT_MANAGER' },
-  { label: 'Employee (Sr. Engineer)', email: 'employee@nexaworks.eg', role: 'EMPLOYEE' },
+  {
+    labelEn: 'System Admin (CTO)',
+    labelAr: 'مدير النظام (الرئيس التقني)',
+    email: 'admin@nexaworks.eg',
+    role: 'SYSTEM_ADMIN',
+  },
+  {
+    labelEn: 'HR Manager (People Lead)',
+    labelAr: 'مدير الموارد البشرية (HR)',
+    email: 'hr@nexaworks.eg',
+    role: 'HR_MANAGER',
+  },
+  {
+    labelEn: 'Dept Manager (VP Eng)',
+    labelAr: 'مدير إدارة الهندسة',
+    email: 'manager@nexaworks.eg',
+    role: 'DEPARTMENT_MANAGER',
+  },
+  {
+    labelEn: 'Employee (Sr. Engineer)',
+    labelAr: 'موظف (مهندس أول)',
+    email: 'employee@nexaworks.eg',
+    role: 'EMPLOYEE',
+  },
 ];
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { actor, workspace, logout, loginWithCredentials, apiFetch, refreshWorkspace } = useAuth();
+  const { locale, isRtl, toggleLocale, t, trRole } = useLanguage();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -111,14 +136,18 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     await loginWithCredentials(email, 'NexaHR@2026');
   };
 
-  const currentPageTitle =
-    NAV_ITEMS.find((i) => location.pathname.startsWith(i.path))?.label || 'Workspace';
+  const activeNav = NAV_ITEMS.find((i) => location.pathname.startsWith(i.path));
+  const currentPageTitle = activeNav
+    ? t(activeNav.labelEn, activeNav.labelAr)
+    : t('Workspace', 'مساحة العمل');
 
   return (
-    <div className="min-h-screen flex bg-[#F8FAFC] text-[#0F172A]">
+    <div className="min-h-screen flex bg-[#F8FAFC] text-[#0F172A]" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden lg:flex flex-col bg-[#0F172A] text-slate-200 border-r border-slate-800 transition-all duration-200 shrink-0 ${
+        className={`hidden lg:flex flex-col bg-[#0F172A] text-slate-200 ${
+          isRtl ? 'border-l' : 'border-r'
+        } border-slate-800 transition-all duration-200 shrink-0 ${
           collapsed ? 'w-20' : 'w-64'
         }`}
       >
@@ -126,7 +155,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         <div className="h-16 flex items-center justify-between px-5 border-b border-slate-800/80">
           <button
             onClick={() => navigate('/dashboard')}
-            className="flex items-center gap-3 text-left focus:outline-none"
+            className="flex items-center gap-3 text-start focus:outline-none"
           >
             <div className="w-9 h-9 rounded-lg bg-[#4F46E5] flex items-center justify-center text-white font-display font-bold text-lg shrink-0">
               N
@@ -134,10 +163,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             {!collapsed && (
               <div className="overflow-hidden">
                 <span className="block font-display font-bold text-white text-base tracking-tight whitespace-nowrap">
-                  NexaHR
+                  {t('NexaHR', 'نكسا إتش آر (NexaHR)')}
                 </span>
                 <span className="block text-[11px] text-slate-400 whitespace-nowrap">
-                  {workspace.organization?.organizationName || 'NexaWorks'}
+                  {t(
+                    workspace.organization?.organizationName || 'NexaWorks',
+                    'نكسا ووركس للتكنولوجيا - مصر'
+                  )}
                 </span>
               </div>
             )}
@@ -147,7 +179,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            {collapsed ? (
+              isRtl ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />
+            ) : isRtl ? (
+              <ChevronRight className="w-4 h-4" />
+            ) : (
+              <ChevronLeft className="w-4 h-4" />
+            )}
           </button>
         </div>
 
@@ -155,11 +193,12 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         <nav aria-label="Main Navigation" className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
           {filteredNavItems.map((item) => {
             const Icon = item.icon;
+            const label = t(item.labelEn, item.labelAr);
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
-                title={collapsed ? item.label : undefined}
+                title={collapsed ? label : undefined}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                     isActive
@@ -169,7 +208,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 }
               >
                 <Icon className="w-4 h-4 shrink-0" />
-                {!collapsed && <span className="truncate">{item.label}</span>}
+                {!collapsed && <span className="truncate">{label}</span>}
               </NavLink>
             );
           })}
@@ -179,17 +218,17 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         <div className="p-3 border-t border-slate-800/80 bg-slate-900/50">
           {!collapsed ? (
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-white truncate">{actor.fullName}</p>
                   <p className="text-[11px] text-slate-400 truncate">
-                    {primaryRole.replace('_', ' ')} · {actor.email}
+                    {trRole(primaryRole)} · {actor.email}
                   </p>
                 </div>
                 <button
                   onClick={logout}
                   aria-label="Log out"
-                  title="Sign Out"
+                  title={t('Sign Out', 'تسجيل الخروج')}
                   className="p-1.5 rounded-md text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors shrink-0"
                 >
                   <LogOut className="w-4 h-4" />
@@ -217,7 +256,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           />
           <aside className="relative w-72 max-w-xs bg-[#0F172A] text-white flex flex-col z-10">
             <div className="h-16 flex items-center justify-between px-5 border-b border-slate-800">
-              <span className="font-display font-bold text-lg">NexaHR</span>
+              <span className="font-display font-bold text-lg">
+                {t('NexaHR', 'نكسا إتش آر')}
+              </span>
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 aria-label="Close navigation menu"
@@ -241,7 +282,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                     }
                   >
                     <Icon className="w-4 h-4 shrink-0" />
-                    <span>{item.label}</span>
+                    <span>{t(item.labelEn, item.labelAr)}</span>
                   </NavLink>
                 );
               })}
@@ -265,7 +306,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             </button>
             <div className="flex items-center gap-2 text-sm whitespace-nowrap overflow-hidden">
               <span className="text-slate-500 hidden sm:inline">
-                {workspace.organization?.organizationName || 'NexaWorks'}
+                {t(
+                  workspace.organization?.organizationName || 'NexaWorks',
+                  'شركة نكسا ووركس (مصر)'
+                )}
               </span>
               <span className="text-slate-300 hidden sm:inline">/</span>
               <span className="font-display font-semibold text-slate-900 truncate">
@@ -277,16 +321,25 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           {/* Zone 2: Global Employee & Directory Search */}
           <div className="relative flex-1 max-w-md hidden md:block">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search
+                className={`w-4 h-4 text-slate-400 absolute ${
+                  isRtl ? 'right-3' : 'left-3'
+                } top-1/2 -translate-y-1/2 pointer-events-none`}
+              />
               <input
                 type="search"
                 value={searchQuery}
                 onFocus={() => setSearchOpen(true)}
                 onBlur={() => setTimeout(() => setSearchOpen(false), 180)}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search employees by name, ID (NW-EMP-004), or email..."
+                placeholder={t(
+                  'Search employees by name, ID (NW-EMP-004), or email...',
+                  'ابحث عن موظف بالاسم، الرقم الوظيفي (NW-EMP-004) أو البريد...'
+                )}
                 aria-label="Global employee directory search"
-                className="w-full pl-9 pr-4 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-[#4F46E5] focus:bg-white transition-colors"
+                className={`w-full ${
+                  isRtl ? 'pr-9 pl-4' : 'pl-9 pr-4'
+                } py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-[#4F46E5] focus:bg-white transition-colors`}
               />
             </div>
             {searchOpen && searchResults.length > 0 && (
@@ -299,13 +352,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                       setSearchQuery('');
                       setSearchOpen(false);
                     }}
-                    className="w-full px-3 py-2 text-left hover:bg-slate-50 flex items-center justify-between text-xs"
+                    className="w-full px-3 py-2 text-start hover:bg-slate-50 flex items-center justify-between text-xs"
                   >
                     <div>
                       <span className="font-semibold text-slate-900">
                         {emp.firstName} {emp.lastName}
                       </span>
-                      <span className="text-slate-500 ml-2">{emp.email}</span>
+                      <span className="text-slate-500 mx-2">{emp.email}</span>
                     </div>
                     <span className="font-mono text-slate-500">{emp.employeeNumber}</span>
                   </button>
@@ -314,37 +367,57 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             )}
           </div>
 
-          {/* Zone 3: Role Evaluator Switcher & Notifications */}
-          <div className="flex items-center gap-3 shrink-0">
-            {/* Role Persona Switcher for Academic Software Engineering II Demonstration */}
+          {/* Zone 3: Language Switcher (EN / Egyptian Arabic RTL), Role Evaluator Switcher & Notifications */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            {/* Egyptian Arabic / English Language Switcher */}
+            <button
+              onClick={toggleLocale}
+              aria-label={locale === 'en' ? 'Switch to Egyptian Arabic RTL' : 'Switch to English LTR'}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#4F46E5] bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/80 rounded-lg transition-colors whitespace-nowrap"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>{locale === 'en' ? 'العربية (مصر)' : 'English'}</span>
+            </button>
+
+            {/* Role Persona Switcher */}
             <div className="relative">
               <button
                 onClick={() => setRoleSwitchOpen(!roleSwitchOpen)}
                 className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200/80 rounded-lg transition-colors whitespace-nowrap"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-[#4F46E5]" />
-                <span>Role: {primaryRole.replace('_', ' ')}</span>
+                <span>
+                  {t('Role:', 'الصلاحية:')} {trRole(primaryRole)}
+                </span>
               </button>
               {roleSwitchOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50">
+                <div
+                  className={`absolute ${
+                    isRtl ? 'left-0' : 'right-0'
+                  } mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-lg py-2 z-50`}
+                >
                   <div className="px-3 py-1.5 border-b border-slate-100">
                     <p className="text-[11px] font-semibold text-slate-900">
-                      Switch Authenticated Role Account
+                      {t('Switch Authenticated Role Account', 'تبديل حساب الصلاحية (للمراجعة)')}
                     </p>
                     <p className="text-[11px] text-slate-500">
-                      Re-authenticates against PostgreSQL RBAC
+                      {t('Re-authenticates against PostgreSQL RBAC', 'يعيد المصادقة الفعلية في قاعدة البيانات')}
                     </p>
                   </div>
                   {DEMO_ACCOUNTS.map((acc) => (
                     <button
                       key={acc.email}
                       onClick={() => handleQuickRoleSwitch(acc.email)}
-                      className={`w-full px-3 py-2 text-left text-xs hover:bg-slate-50 flex items-center justify-between ${
-                        actor.email === acc.email ? 'bg-indigo-50/60 font-semibold text-[#4F46E5]' : 'text-slate-700'
+                      className={`w-full px-3 py-2 text-start text-xs hover:bg-slate-50 flex items-center justify-between ${
+                        actor.email === acc.email
+                          ? 'bg-indigo-50/60 font-semibold text-[#4F46E5]'
+                          : 'text-slate-700'
                       }`}
                     >
-                      <span>{acc.label}</span>
-                      {actor.email === acc.email && <span className="text-[10px]">Active</span>}
+                      <span>{t(acc.labelEn, acc.labelAr)}</span>
+                      {actor.email === acc.email && (
+                        <span className="text-[10px]">{t('Active', 'نشط')}</span>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -367,31 +440,41 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               </button>
 
               {notifOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                <div
+                  className={`absolute ${
+                    isRtl ? 'left-0' : 'right-0'
+                  } mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden`}
+                >
                   <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
                     <span className="font-display font-semibold text-xs text-slate-900">
-                      Notifications ({unreadNotifications.length} unread)
+                      {t(
+                        `Notifications (${unreadNotifications.length} unread)`,
+                        `الإشعارات (${unreadNotifications.length} غير مقروءة)`
+                      )}
                     </span>
                     {unreadNotifications.length > 0 && (
                       <button
                         onClick={handleMarkAllRead}
                         className="text-xs text-[#4F46E5] hover:underline font-medium"
                       >
-                        Mark all as read
+                        {t('Mark all as read', 'تحديد الكل كمقروء')}
                       </button>
                     )}
                   </div>
                   <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
                     {workspace.notifications.length === 0 ? (
                       <div className="p-6 text-center text-xs text-slate-500">
-                        No notifications recorded for your account.
+                        {t(
+                          'No notifications recorded for your account.',
+                          'لا توجد إشعارات مسجلة لحسابك حالياً.'
+                        )}
                       </div>
                     ) : (
                       workspace.notifications.slice(0, 12).map((n) => (
                         <button
                           key={n.id}
                           onClick={() => handleNotificationClick(n)}
-                          className={`w-full px-4 py-3 text-left hover:bg-slate-50 transition-colors block ${
+                          className={`w-full px-4 py-3 text-start hover:bg-slate-50 transition-colors block ${
                             !n.isRead ? 'bg-indigo-50/30' : ''
                           }`}
                         >

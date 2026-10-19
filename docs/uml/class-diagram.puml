@@ -142,6 +142,15 @@ class DomainRulesService <<service>> {
   +canApproveLeaveForEmployee()
 }
 
+class LocalizationService <<service>> {
+  +getDirectionForLocale(locale: SupportedLocale)
+  +translateDepartmentName(name: string, locale: SupportedLocale)
+  +translateJobTitle(title: string, locale: SupportedLocale)
+  +translateStatus(status: string, locale: SupportedLocale)
+  +translateRole(role: string, locale: SupportedLocale)
+  +translateLeaveType(name: string, locale: SupportedLocale)
+}
+
 Profile "1" -- "1..*" UserRole : has >
 Profile "0..1" -- "0..1" Employee : linked to >
 Department "1" -- "0..*" Employee : employs >

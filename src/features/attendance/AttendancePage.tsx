@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { formatDateDDMMYYYY, canPerformAction } from '../../domain/rules';
-import { Play, Square, Clock, Check, X, FileEdit, Download } from 'lucide-react';
+import { Play, Square, FileEdit } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const AttendancePage: React.FC = () => {
   const { actor, workspace, apiFetch, refreshWorkspace } = useAuth();
+  const { t, trDept, trStatus } = useLanguage();
   const [tab, setTab] = useState<'MY_LOGS' | 'TEAM_LOGS' | 'CORRECTIONS'>('MY_LOGS');
   const [corrModalOpen, setCorrModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
@@ -30,13 +32,20 @@ export const AttendancePage: React.FC = () => {
           method: 'POST',
           body: JSON.stringify({ notes: 'Checked out from Attendance Module' }),
         });
-        toast.success('Session closed and working duration calculated.');
+        toast.success(
+          t(
+            'Session closed and working duration calculated.',
+            'تم إغلاق جلسة العمل وحساب عدد ساعات العمل الفعلية.'
+          )
+        );
       } else {
         await apiFetch('/api/attendance/check-in', {
           method: 'POST',
           body: JSON.stringify({ notes: 'Checked in from Attendance Module' }),
         });
-        toast.success('Attendance check-in session opened in UTC.');
+        toast.success(
+          t('Attendance check-in session opened in UTC.', 'تم فتح جلسة الحضور بنجاح بتوقيت القاهرة.')
+        );
       }
       await refreshWorkspace();
     } catch (err: any) {
@@ -49,11 +58,14 @@ export const AttendancePage: React.FC = () => {
     if (!selectedRecord) return;
     try {
       const dateStr = selectedRecord.attendanceDate;
-      // Convert Africa/Cairo local HH:mm (UTC+2) to UTC ISO timestamp
       const [inH, inM] = reqInTime.split(':').map(Number);
       const [outH, outM] = reqOutTime.split(':').map(Number);
-      const inUtc = new Date(`${dateStr}T${String(Math.max(0, inH - 2)).padStart(2, '0')}:${String(inM).padStart(2, '0')}:00Z`);
-      const outUtc = new Date(`${dateStr}T${String(Math.max(0, outH - 2)).padStart(2, '0')}:${String(outM).padStart(2, '0')}:00Z`);
+      const inUtc = new Date(
+        `${dateStr}T${String(Math.max(0, inH - 2)).padStart(2, '0')}:${String(inM).padStart(2, '0')}:00Z`
+      );
+      const outUtc = new Date(
+        `${dateStr}T${String(Math.max(0, outH - 2)).padStart(2, '0')}:${String(outM).padStart(2, '0')}:00Z`
+      );
 
       await apiFetch('/api/attendance/corrections', {
         method: 'POST',
@@ -64,7 +76,9 @@ export const AttendancePage: React.FC = () => {
           reason: corrReason,
         }),
       });
-      toast.success('Attendance correction request submitted for review');
+      toast.success(
+        t('Attendance correction request submitted for review', 'تم إرسال طلب تصحيح الحضور للمراجعة')
+      );
       setCorrModalOpen(false);
       setCorrReason('');
       await refreshWorkspace();
@@ -79,10 +93,15 @@ export const AttendancePage: React.FC = () => {
         method: 'PATCH',
         body: JSON.stringify({
           status,
-          decisionReason: status === 'APPROVED' ? 'Verified and approved by manager.' : 'Insufficient verification.',
+          decisionReason:
+            status === 'APPROVED'
+              ? 'Verified and approved by manager.'
+              : 'Insufficient verification.',
         }),
       });
-      toast.success(`Correction request ${status.toLowerCase()}`);
+      toast.success(
+        t(`Correction request ${status.toLowerCase()}`, `تم تحديث حالة طلب التصحيح إلى ${trStatus(status)}`)
+      );
       await refreshWorkspace();
     } catch (err: any) {
       toast.error(err.message);
@@ -90,7 +109,7 @@ export const AttendancePage: React.FC = () => {
   };
 
   const formatCairoTime = (utcStr: string | null) => {
-    if (!utcStr) return 'Active Session';
+    if (!utcStr) return t('Active Session', 'جلسة مفتوحة');
     const d = new Date(utcStr);
     const cairo = new Date(d.getTime() + 2 * 3600 * 1000);
     return cairo.toISOString().slice(11, 16) + ' EET';
@@ -108,10 +127,13 @@ export const AttendancePage: React.FC = () => {
       <div className="bg-white border border-slate-200 rounded-xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-slate-900">
-            Attendance & Time Tracking
+            {t('Attendance & Time Tracking', 'سجل الحضور والانصراف وساعات العمل')}
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Authoritative UTC server timestamps displayed in Africa/Cairo local time · Logged Hours: {totalHoursFormatted}h
+            {t(
+              `Authoritative UTC server timestamps displayed in Africa/Cairo local time · Logged Hours: ${totalHoursFormatted}h`,
+              `يتم تسجيل البصمة الزمنية بتوقيت القاهرة (Africa/Cairo) · إجمالي الساعات المسجلة: ${totalHoursFormatted} ساعة`
+            )}
           </p>
         </div>
 
@@ -125,12 +147,12 @@ export const AttendancePage: React.FC = () => {
             {myOpenSession ? (
               <>
                 <Square className="w-3.5 h-3.5" />
-                <span>Check Out Now</span>
+                <span>{t('Check Out Now', 'تسجيل انصراف الآن')}</span>
               </>
             ) : (
               <>
                 <Play className="w-3.5 h-3.5" />
-                <span>Check In Now</span>
+                <span>{t('Check In Now', 'تسجيل حضور الآن')}</span>
               </>
             )}
           </button>
@@ -145,7 +167,7 @@ export const AttendancePage: React.FC = () => {
             tab === 'MY_LOGS' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
           }`}
         >
-          My Attendance ({myRecords.length})
+          {t('My Attendance', 'سجل حضوري الشخصي')} ({myRecords.length})
         </button>
         {isManagerOrHr && (
           <button
@@ -154,7 +176,8 @@ export const AttendancePage: React.FC = () => {
               tab === 'TEAM_LOGS' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
             }`}
           >
-            Authorized Workforce Logs ({workspace.attendanceRecords.length})
+            {t('Authorized Workforce Logs', 'سجلات حضور الموظفين')} (
+            {workspace.attendanceRecords.length})
           </button>
         )}
         <button
@@ -163,7 +186,8 @@ export const AttendancePage: React.FC = () => {
             tab === 'CORRECTIONS' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
           }`}
         >
-          Correction Requests ({workspace.attendanceCorrections.length})
+          {t('Correction Requests', 'طلبات تصحيح الحضور')} (
+          {workspace.attendanceCorrections.length})
         </button>
       </div>
 
@@ -174,13 +198,13 @@ export const AttendancePage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-500">
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4">Check-In (Cairo)</th>
-                  <th className="py-3 px-4">Check-Out (Cairo)</th>
-                  <th className="py-3 px-4">Duration</th>
-                  <th className="py-3 px-4">Late Arrival</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Correction</th>
+                  <th className="py-3 px-4">{t('Date', 'التاريخ')}</th>
+                  <th className="py-3 px-4">{t('Check-In (Cairo)', 'وقت الحضور (القاهرة)')}</th>
+                  <th className="py-3 px-4">{t('Check-Out (Cairo)', 'وقت الانصراف (القاهرة)')}</th>
+                  <th className="py-3 px-4">{t('Duration', 'مدة العمل')}</th>
+                  <th className="py-3 px-4">{t('Late Arrival', 'التأخير')}</th>
+                  <th className="py-3 px-4">{t('Status', 'الحالة')}</th>
+                  <th className="py-3 px-4 text-right">{t('Correction', 'تصحيح')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
@@ -196,10 +220,14 @@ export const AttendancePage: React.FC = () => {
                       {formatCairoTime(rec.checkOutUtc)}
                     </td>
                     <td className="py-3 px-4 font-mono tabular-nums text-slate-900">
-                      {rec.workedMinutes ? `${Math.floor(rec.workedMinutes / 60)}h ${rec.workedMinutes % 60}m` : '—'}
+                      {rec.workedMinutes
+                        ? `${Math.floor(rec.workedMinutes / 60)}h ${rec.workedMinutes % 60}m`
+                        : '—'}
                     </td>
                     <td className="py-3 px-4 font-mono text-slate-600">
-                      {rec.lateMinutes > 0 ? `${rec.lateMinutes} mins late` : 'On Time'}
+                      {rec.lateMinutes > 0
+                        ? t(`${rec.lateMinutes} mins late`, `تأخير ${rec.lateMinutes} دقيقة`)
+                        : t('On Time', 'في الموعد')}
                     </td>
                     <td className="py-3 px-4 font-mono font-semibold">
                       <span
@@ -211,7 +239,7 @@ export const AttendancePage: React.FC = () => {
                             : 'text-[#4F46E5]'
                         }
                       >
-                        {rec.status}
+                        {trStatus(rec.status)}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -223,7 +251,7 @@ export const AttendancePage: React.FC = () => {
                         className="text-xs font-medium text-[#4F46E5] hover:underline inline-flex items-center gap-1"
                       >
                         <FileEdit className="w-3.5 h-3.5" />
-                        <span>Request Correction</span>
+                        <span>{t('Request Correction', 'طلب تصحيح')}</span>
                       </button>
                     </td>
                   </tr>
@@ -244,15 +272,20 @@ export const AttendancePage: React.FC = () => {
               onChange={(e) => setDeptFilter(e.target.value)}
               className="px-3 py-1.5 text-xs border border-slate-200 rounded-lg bg-white"
             >
-              <option value="ALL">All Authorized Departments</option>
+              <option value="ALL">
+                {t('All Authorized Departments', 'جميع الإدارات المصرح بها')}
+              </option>
               {workspace.departments.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {d.name}
+                  {trDept(d.name)}
                 </option>
               ))}
             </select>
             <span className="text-xs text-slate-500 font-mono">
-              Showing {filteredTeamRecords.length} records
+              {t(
+                `Showing ${filteredTeamRecords.length} records`,
+                `إجمالي السجلات: ${filteredTeamRecords.length}`
+              )}
             </span>
           </div>
 
@@ -261,12 +294,12 @@ export const AttendancePage: React.FC = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-500">
-                    <th className="py-3 px-4">Employee</th>
-                    <th className="py-3 px-4">Date</th>
-                    <th className="py-3 px-4">Check-In</th>
-                    <th className="py-3 px-4">Check-Out</th>
-                    <th className="py-3 px-4">Worked</th>
-                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4">{t('Employee', 'الموظف')}</th>
+                    <th className="py-3 px-4">{t('Date', 'التاريخ')}</th>
+                    <th className="py-3 px-4">{t('Check-In', 'الحضور')}</th>
+                    <th className="py-3 px-4">{t('Check-Out', 'الانصراف')}</th>
+                    <th className="py-3 px-4">{t('Worked', 'ساعات العمل')}</th>
+                    <th className="py-3 px-4">{t('Status', 'الحالة')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-xs">
@@ -280,13 +313,19 @@ export const AttendancePage: React.FC = () => {
                             {emp?.employeeNumber}
                           </span>
                         </td>
-                        <td className="py-3 px-4 font-mono">{formatDateDDMMYYYY(rec.attendanceDate)}</td>
+                        <td className="py-3 px-4 font-mono">
+                          {formatDateDDMMYYYY(rec.attendanceDate)}
+                        </td>
                         <td className="py-3 px-4 font-mono">{formatCairoTime(rec.checkInUtc)}</td>
                         <td className="py-3 px-4 font-mono">{formatCairoTime(rec.checkOutUtc)}</td>
                         <td className="py-3 px-4 font-mono">
-                          {rec.workedMinutes ? `${Math.floor(rec.workedMinutes / 60)}h ${rec.workedMinutes % 60}m` : '—'}
+                          {rec.workedMinutes
+                            ? `${Math.floor(rec.workedMinutes / 60)}h ${rec.workedMinutes % 60}m`
+                            : '—'}
                         </td>
-                        <td className="py-3 px-4 font-mono font-semibold">{rec.status}</td>
+                        <td className="py-3 px-4 font-mono font-semibold">
+                          {trStatus(rec.status)}
+                        </td>
                       </tr>
                     );
                   })}
@@ -304,12 +343,12 @@ export const AttendancePage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-500">
-                  <th className="py-3 px-4">Employee</th>
-                  <th className="py-3 px-4">Requested Check-In</th>
-                  <th className="py-3 px-4">Requested Check-Out</th>
-                  <th className="py-3 px-4">Reason</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Decision</th>
+                  <th className="py-3 px-4">{t('Employee', 'الموظف')}</th>
+                  <th className="py-3 px-4">{t('Requested Check-In', 'وقت الحضور المطلوب')}</th>
+                  <th className="py-3 px-4">{t('Requested Check-Out', 'وقت الانصراف المطلوب')}</th>
+                  <th className="py-3 px-4">{t('Reason', 'سبب التصحيح')}</th>
+                  <th className="py-3 px-4">{t('Status', 'الحالة')}</th>
+                  <th className="py-3 px-4 text-right">{t('Decision', 'القرار')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
@@ -320,10 +359,16 @@ export const AttendancePage: React.FC = () => {
                       <td className="py-3 px-4 font-semibold text-slate-900">
                         {emp ? `${emp.firstName} ${emp.lastName}` : `#${corr.employeeId}`}
                       </td>
-                      <td className="py-3 px-4 font-mono">{formatCairoTime(corr.requestedCheckInUtc)}</td>
-                      <td className="py-3 px-4 font-mono">{formatCairoTime(corr.requestedCheckOutUtc)}</td>
+                      <td className="py-3 px-4 font-mono">
+                        {formatCairoTime(corr.requestedCheckInUtc)}
+                      </td>
+                      <td className="py-3 px-4 font-mono">
+                        {formatCairoTime(corr.requestedCheckOutUtc)}
+                      </td>
                       <td className="py-3 px-4 text-slate-600 max-w-md">{corr.reason}</td>
-                      <td className="py-3 px-4 font-mono font-semibold">{corr.status}</td>
+                      <td className="py-3 px-4 font-mono font-semibold">
+                        {trStatus(corr.status)}
+                      </td>
                       <td className="py-3 px-4 text-right">
                         {corr.status === 'PENDING' && isManagerOrHr ? (
                           <div className="inline-flex items-center gap-2">
@@ -331,17 +376,19 @@ export const AttendancePage: React.FC = () => {
                               onClick={() => handleReviewCorrection(corr.id, 'APPROVED')}
                               className="px-2.5 py-1 bg-emerald-600 text-white rounded text-xs font-medium"
                             >
-                              Approve
+                              {t('Approve', 'اعتماد')}
                             </button>
                             <button
                               onClick={() => handleReviewCorrection(corr.id, 'REJECTED')}
                               className="px-2.5 py-1 bg-rose-600 text-white rounded text-xs font-medium"
                             >
-                              Reject
+                              {t('Reject', 'رفض')}
                             </button>
                           </div>
                         ) : (
-                          <span className="text-slate-400">{corr.decisionReason || 'Finalized'}</span>
+                          <span className="text-slate-400">
+                            {corr.decisionReason || t('Finalized', 'تم البت')}
+                          </span>
                         )}
                       </td>
                     </tr>
@@ -358,15 +405,18 @@ export const AttendancePage: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
           <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6">
             <h2 className="font-display text-lg font-bold text-slate-900">
-              Request Attendance Correction
+              {t('Request Attendance Correction', 'تقديم طلب تصحيح حضور وانصراف')}
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Date: {formatDateDDMMYYYY(selectedRecord.attendanceDate)} (Africa/Cairo Time)
+              {t('Date:', 'التاريخ:')} {formatDateDDMMYYYY(selectedRecord.attendanceDate)}{' '}
+              {t('(Africa/Cairo Time)', '(بتوقيت القاهرة)')}
             </p>
             <form onSubmit={handleSubmitCorrection} className="mt-4 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium text-slate-700 mb-1">Check-In Time (HH:mm)</label>
+                  <label className="block font-medium text-slate-700 mb-1">
+                    {t('Check-In Time (HH:mm)', 'وقت الحضور (HH:mm)')}
+                  </label>
                   <input
                     type="time"
                     required
@@ -376,7 +426,9 @@ export const AttendancePage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-slate-700 mb-1">Check-Out Time (HH:mm)</label>
+                  <label className="block font-medium text-slate-700 mb-1">
+                    {t('Check-Out Time (HH:mm)', 'وقت الانصراف (HH:mm)')}
+                  </label>
                   <input
                     type="time"
                     required
@@ -387,13 +439,18 @@ export const AttendancePage: React.FC = () => {
                 </div>
               </div>
               <div>
-                <label className="block font-medium text-slate-700 mb-1">Explanation / Reason *</label>
+                <label className="block font-medium text-slate-700 mb-1">
+                  {t('Explanation / Reason *', 'سبب طلب التصحيح *')}
+                </label>
                 <textarea
                   required
                   rows={3}
                   value={corrReason}
                   onChange={(e) => setCorrReason(e.target.value)}
-                  placeholder="Describe why the badge or portal timestamp needs adjustment..."
+                  placeholder={t(
+                    'Describe why the badge or portal timestamp needs adjustment...',
+                    'اذكر سبب تعديل توقيت البصمة أو الجلسة...'
+                  )}
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg"
                 />
               </div>
@@ -403,13 +460,13 @@ export const AttendancePage: React.FC = () => {
                   onClick={() => setCorrModalOpen(false)}
                   className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg"
                 >
-                  Cancel
+                  {t('Cancel', 'إلغاء')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-[#4F46E5] text-white font-semibold rounded-lg"
                 >
-                  Submit Request
+                  {t('Submit Request', 'إرسال الطلب')}
                 </button>
               </div>
             </form>

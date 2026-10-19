@@ -504,7 +504,7 @@ export function canApproveLeaveForEmployee(
 }
 
 /**
- *Format YYYY-MM-DD to DD/MM/YYYY as required by NexaHR UI spec
+ * Format YYYY-MM-DD to DD/MM/YYYY as required by NexaHR UI spec
  */
 export function formatDateDDMMYYYY(isoDate: string | null | undefined): string {
   if (!isoDate) return '—';
@@ -513,3 +513,118 @@ export function formatDateDDMMYYYY(isoDate: string | null | undefined): string {
   if (parts.length !== 3) return isoDate;
   return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
+
+/**
+ * 7. Egyptian Arabic (ar-EG) & RTL Localization Domain Helpers
+ */
+export type SupportedLocale = 'en' | 'ar';
+
+export function getDirectionForLocale(locale: SupportedLocale): 'ltr' | 'rtl' {
+  return locale === 'ar' ? 'rtl' : 'ltr';
+}
+
+const DEPT_AR_MAP: Record<string, string> = {
+  Engineering: 'قطاع الهندسة والبرمجيات',
+  'Human Resources': 'الموارد البشرية وشؤون العاملين',
+  Finance: 'الإدارة المالية والحسابات',
+  Marketing: 'التسويق والنمو',
+  Operations: 'العمليات والدعم اللوجستي',
+};
+
+export function translateDepartmentName(name: string | undefined, locale: SupportedLocale): string {
+  if (!name) return '';
+  if (locale !== 'ar') return name;
+  return DEPT_AR_MAP[name] || name;
+}
+
+const JOB_TITLE_AR_MAP: Record<string, string> = {
+  'Chief Technology Officer': 'الرئيس التنفيذي للتكنولوجيا (CTO)',
+  'VP of Engineering': 'نائب الرئيس لقطاع الهندسة',
+  'Senior Full-Stack Engineer': 'مهندس برمجيات متكامل أول',
+  'Software Engineer II': 'مهندس برمجيات ثانٍ',
+  'Cloud Infrastructure Engineer': 'مهندس البنية التحتية السحابية',
+  'QA Automation Lead': 'قائد أتمتة ضمان الجودة',
+  'Head of People & Culture': 'رئيس قطاع الموارد البشرية',
+  'Senior Talent & HR Specialist': 'أخصائي أول موارد بشرية واستقطاب كفاءات',
+  'People Operations Coordinator': 'منسق عمليات شؤون العاملين',
+  'Finance Director': 'مدير القطاع المالي',
+  'Senior Payroll & Tax Accountant': 'محاسب أول رواتب وضرائب',
+  'Financial Analyst': 'محلل مالي',
+  'Growth & Marketing Director': 'مدير التسويق والنمو',
+  'Digital Brand Specialist': 'أخصائي علامة تجارية وتسويق رقمي',
+  'Director of Operations': 'مدير العمليات التشغيلية',
+  'Workplace & Facilities Lead': 'مسؤول المقر والخدمات الإدارية',
+};
+
+export function translateJobTitle(title: string | undefined, locale: SupportedLocale): string {
+  if (!title) return '';
+  if (locale !== 'ar') return title;
+  return JOB_TITLE_AR_MAP[title] || title;
+}
+
+const STATUS_AR_MAP: Record<string, string> = {
+  ACTIVE: 'نشط',
+  ON_LEAVE: 'في إجازة',
+  PROBATION: 'تحت الاختبار',
+  ARCHIVED: 'مؤرشف',
+  PENDING: 'قيد المراجعة',
+  APPROVED: 'معتمد',
+  REJECTED: 'مرفوض',
+  CANCELLED: 'ملغى',
+  TODO: 'مطلوب تنفيذه',
+  IN_PROGRESS: 'جاري التنفيذ',
+  IN_REVIEW: 'قيد المراجعة',
+  COMPLETED: 'مكتمل',
+  DRAFT: 'مسودة سرية',
+  PUBLISHED: 'منشور للموظف',
+  ACKNOWLEDGED: 'تم الاطلاع والتوقيع',
+  PAID: 'تم الصرف',
+  PRESENT: 'حضور منتظم',
+  LATE: 'تأخير',
+  OPEN: 'جلسة مفتوحة',
+  CORRECTED: 'تم التصحيح',
+  HALF_DAY: 'نصف يوم',
+  ABSENT: 'غياب',
+  INVITED: 'مدعو للتفعيل',
+  DEACTIVATED: 'موقوف',
+  ONBOARDING: 'تأهيل موظف جديد',
+  OFFBOARDING: 'إخلاء طرف ومغادرة',
+  VERIFIED: 'موثق',
+  CRITICAL: 'حرج جداً',
+  HIGH: 'أولوية عالية',
+  MEDIUM: 'متوسط',
+  LOW: 'منخفض',
+};
+
+export function translateStatus(status: string | undefined, locale: SupportedLocale): string {
+  if (!status) return '';
+  if (locale !== 'ar') return status;
+  return STATUS_AR_MAP[status] || status;
+}
+
+const ROLE_AR_MAP: Record<string, string> = {
+  SYSTEM_ADMIN: 'مدير النظام',
+  HR_MANAGER: 'مدير الموارد البشرية',
+  DEPARTMENT_MANAGER: 'مدير إدارة',
+  EMPLOYEE: 'موظف',
+};
+
+export function translateRole(role: string | undefined, locale: SupportedLocale): string {
+  if (!role) return '';
+  if (locale !== 'ar') return role.replace(/_/g, ' ');
+  return ROLE_AR_MAP[role] || role;
+}
+
+const LEAVE_TYPE_AR_MAP: Record<string, string> = {
+  'Annual Leave': 'إجازة اعتيادية سنوية',
+  'Medical / Sick Leave': 'إجازة مرضية',
+  'Unpaid Personal Leave': 'إجازة خاصة بدون مرتب',
+  'Casual / Emergency Leave': 'إجازة عارضة / طارئة',
+};
+
+export function translateLeaveType(name: string | undefined, locale: SupportedLocale): string {
+  if (!name) return '';
+  if (locale !== 'ar') return name;
+  return LEAVE_TYPE_AR_MAP[name] || name;
+}
+
