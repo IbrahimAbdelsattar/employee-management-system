@@ -1,21 +1,21 @@
 flowchart TB
     subgraph Client["Presentation & Application Layer (React 19 + TypeScript)"]
         UI_Shell["AppShell, Role Switcher & Arabic RTL / English LTR Toggle"]
-        UI_Pages["12 Feature Modules\n(Dashboard, Employees, Org, Attendance,\nLeave, Shifts, Tasks, Performance,\nOnboarding, Payroll, Reports, Admin)"]
+        UI_Pages["12 Feature Modules (Dashboard, Employees, Org, Attendance, Leave, Shifts, Tasks, Performance, Onboarding, Payroll, Reports, Admin)"]
         AuthCtx["AuthContext & Workspace Store"]
         LangCtx["LanguageContext (en LTR / ar-EG RTL)"]
     end
 
     subgraph Server["Backend API & Domain Layer (Node.js + Express on Port 3000)"]
-        AuthMW["requireAuth Middleware\n(Firebase Admin + HMAC Session Verification)"]
-        API_Routes["RESTful Controller Routes\n(/api/bootstrap, /api/employees, /api/leave, /api/payroll, ...)"]
-        DomainRules["Pure Domain Engine (src/domain/rules.ts)\nRBAC Matrix, Leave State Machine, Hierarchy Checks & ar-EG Translators"]
+        AuthMW["requireAuth Middleware (Firebase Admin + HMAC Session Verification)"]
+        API_Routes["RESTful Controller Routes (/api/bootstrap, /api/employees, /api/leave, /api/payroll)"]
+        DomainRules["Pure Domain Engine (src/domain/rules.ts) - RBAC Matrix, Leave State Machine, Hierarchy Checks & ar-EG Translators"]
         AuditSvc["Audit & Notification Dispatcher"]
     end
 
     subgraph Persistence["Persistence Layer (Google Cloud SQL for PostgreSQL)"]
         Drizzle["Drizzle ORM & pg.Pool"]
-        PG[("PostgreSQL Database\n26 Normalized Domain Tables\n(NexaWorks Dataset)")]
+        PG[("PostgreSQL Database - 26 Normalized Domain Tables (NexaWorks Dataset)")]
     end
 
     UI_Shell --> AuthCtx
