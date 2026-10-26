@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import {
   SupportedLocale,
   getDirectionForLocale,
+  resolveInitialLocale,
   translateDepartmentName,
   translateJobTitle,
   translateStatus,
@@ -24,23 +25,19 @@ interface LanguageContextValue {
 
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
-const STORAGE_KEY = 'nexahr_lang';
+export const LANG_STORAGE_KEY = 'nexahr_lang_v2';
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [locale, setLocaleState] = useState<SupportedLocale>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const urlLang = params.get('lang');
-      if (urlLang === 'ar' || urlLang === 'en') {
-        localStorage.setItem(STORAGE_KEY, urlLang);
-        return urlLang;
-      }
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved === 'ar' || saved === 'en') {
-        return saved;
-      }
+      const savedLang = localStorage.getItem(LANG_STORAGE_KEY);
+      const resolved = resolveInitialLocale(urlLang, savedLang);
+      localStorage.setItem(LANG_STORAGE_KEY, resolved);
+      return resolved;
     }
-    return 'en';
+    return 'ar';
   });
 
   const isRtl = getDirectionForLocale(locale) === 'rtl';
@@ -49,7 +46,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const dir = getDirectionForLocale(locale);
     document.documentElement.dir = dir;
     document.documentElement.lang = locale === 'ar' ? 'ar-EG' : 'en';
-    localStorage.setItem(STORAGE_KEY, locale);
+    localStorage.setItem(LANG_STORAGE_KEY, locale);
   }, [locale]);
 
   const setLocale = useCallback((loc: SupportedLocale) => {

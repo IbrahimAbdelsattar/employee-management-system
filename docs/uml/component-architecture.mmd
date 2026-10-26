@@ -1,32 +1,35 @@
+%%{init: {'flowchart': {'htmlLabels': false}} }%%
 flowchart TB
-    subgraph Client["Presentation & Application Layer (React 19 + TypeScript)"]
-        UI_Shell["AppShell, Role Switcher & Arabic RTL / English LTR Toggle"]
-        UI_Pages["12 Feature Modules (Dashboard, Employees, Org, Attendance, Leave, Shifts, Tasks, Performance, Onboarding, Payroll, Reports, Admin)"]
-        AuthCtx["AuthContext & Workspace Store"]
-        LangCtx["LanguageContext (en LTR / ar-EG RTL)"]
+    subgraph Layer1["1 Presentation Layer - React 19 and Tailwind CSS"]
+        Landing["LandingPage - Hero, EGP Simulator and Contact Modal"]
+        AppShell["AppShell Layout with Role Switcher and RTL Toggle"]
+        FeaturePages["12 Feature Modules across HR, Attendance, Leave and Payroll"]
     end
-
-    subgraph Server["Backend API & Domain Layer (Node.js + Express on Port 3000)"]
-        AuthMW["requireAuth Middleware (Firebase Admin + HMAC Session Verification)"]
-        API_Routes["RESTful Controller Routes (/api/bootstrap, /api/employees, /api/leave, /api/payroll)"]
-        DomainRules["Pure Domain Engine (src/domain/rules.ts) - RBAC Matrix, Leave State Machine, Hierarchy Checks & ar-EG Translators"]
-        AuditSvc["Audit & Notification Dispatcher"]
+    subgraph Layer2["2 Application Layer - React Context"]
+        AuthCtx["AuthContext - Session Token and RBAC Workspace State"]
+        LangCtx["LanguageContext - Default Egyptian Arabic RTL and English LTR"]
     end
-
-    subgraph Persistence["Persistence Layer (Google Cloud SQL for PostgreSQL)"]
-        Drizzle["Drizzle ORM & pg.Pool"]
-        PG[("PostgreSQL Database - 26 Normalized Domain Tables (NexaWorks Dataset)")]
+    subgraph Layer3["3 Backend API Layer - Express Server on Port 3000"]
+        AuthMW["requireAuth Middleware - Firebase and HMAC Verifier"]
+        Controllers["REST API Controllers in server.ts"]
     end
-
-    UI_Shell --> AuthCtx
-    UI_Shell --> LangCtx
-    UI_Pages --> AuthCtx
-    UI_Pages --> LangCtx
+    subgraph Layer4["4 Pure Domain Layer - src/domain/rules.ts"]
+        DomainRules["Business Rules Engine - RBAC, Leave Calculator, Payroll and RTL Translators"]
+    end
+    subgraph Layer5["5 Persistence Layer - Drizzle ORM and Cloud SQL"]
+        Drizzle["Drizzle ORM Schema in src/db/schema.ts"]
+        CloudSQL["Google Cloud SQL PostgreSQL - 26 Normalized Tables"]
+    end
+    Landing --> AuthCtx
+    Landing --> LangCtx
+    Landing --> DomainRules
+    AppShell --> AuthCtx
+    AppShell --> LangCtx
+    FeaturePages --> AuthCtx
+    FeaturePages --> LangCtx
     LangCtx --> DomainRules
-    AuthCtx -- "HTTPS JSON + Bearer Token" --> AuthMW
-    AuthMW --> API_Routes
-    API_Routes --> DomainRules
-    API_Routes --> AuditSvc
-    API_Routes --> Drizzle
-    AuditSvc --> Drizzle
-    Drizzle -- "Cloud SQL Unix Socket" --> PG
+    AuthCtx -->|Bearer Token HTTPS| AuthMW
+    AuthMW --> Controllers
+    Controllers --> DomainRules
+    Controllers --> Drizzle
+    Drizzle -->|pg Pool| CloudSQL

@@ -628,3 +628,84 @@ export function translateLeaveType(name: string | undefined, locale: SupportedLo
   return LEAVE_TYPE_AR_MAP[name] || name;
 }
 
+export const BRAND_NAME = 'NexaHR' as const;
+
+export function resolveInitialLocale(
+  urlLang?: string | null,
+  savedLang?: string | null
+): SupportedLocale {
+  if (urlLang === 'ar' || urlLang === 'en') {
+    return urlLang;
+  }
+  if (savedLang === 'ar' || savedLang === 'en') {
+    return savedLang;
+  }
+  return 'ar';
+}
+
+export interface DemoContactRequestInput {
+  fullName: string;
+  workEmail: string;
+  companyName: string;
+  companySize: string;
+  focusArea?: string;
+}
+
+export interface DemoContactValidationResult {
+  valid: boolean;
+  errors: {
+    fullName?: string;
+    workEmail?: string;
+    companyName?: string;
+  };
+  referenceCode?: string;
+}
+
+export function validateDemoContactRequest(
+  input: DemoContactRequestInput,
+  locale: SupportedLocale = 'ar'
+): DemoContactValidationResult {
+  const errors: DemoContactValidationResult['errors'] = {};
+  const nameTrimmed = (input.fullName || '').trim();
+  const emailTrimmed = (input.workEmail || '').trim();
+  const companyTrimmed = (input.companyName || '').trim();
+
+  if (nameTrimmed.length < 2) {
+    errors.fullName =
+      locale === 'ar'
+        ? 'يرجى إدخال الاسم بالكامل (حرفين على الأقل).'
+        : 'Please enter your full name (at least 2 characters).';
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(emailTrimmed)) {
+    errors.workEmail =
+      locale === 'ar'
+        ? 'يرجى إدخال بريد إلكتروني صحيح للعمل.'
+        : 'Please enter a valid work email address.';
+  }
+
+  if (companyTrimmed.length < 2) {
+    errors.companyName =
+      locale === 'ar'
+        ? 'يرجى إدخال اسم الشركة أو المؤسسة.'
+        : 'Please enter your company or organization name.';
+  }
+
+  const valid = Object.keys(errors).length === 0;
+  if (!valid) {
+    return { valid: false, errors };
+  }
+
+  const cleanPrefix = companyTrimmed
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .toUpperCase()
+    .slice(0, 3)
+    .padEnd(3, 'X');
+
+  return {
+    valid: true,
+    errors: {},
+    referenceCode: `NX-DEMO-${cleanPrefix}-2026`,
+  };
+}

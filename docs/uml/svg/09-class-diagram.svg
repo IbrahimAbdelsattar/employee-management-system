@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 920" width="1320" height="920" direction="ltr" style="direction: ltr;" font-family="'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow-solid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#4F46E5"/>
+    </marker>
+    <marker id="arrow-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#475569" stroke-width="1.6"/>
+    </marker>
+    <marker id="arrow-inherit" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 10 6 L 1 10.5 z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.6"/>
+    </marker>
+    <marker id="diamond-comp" viewBox="0 0 14 10" refX="13" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M 1 5 L 7 1 L 13 5 L 7 9 z" fill="#0F172A" stroke="#0F172A" stroke-width="1.2"/>
+    </marker>
+    <marker id="diamond-agg" viewBox="0 0 14 10" refX="13" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M 1 5 L 7 1 L 13 5 L 7 9 z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <linearGradient id="hdr-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="indigo-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Canvas Card -->
+  <rect x="0" y="0" width="1320" height="920" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+
+  <!-- Top Title Banner -->
+  <rect x="0" y="0" width="1320" height="64" rx="14" fill="url(#hdr-grad)"/>
+  <rect x="0" y="48" width="1320" height="16" fill="url(#hdr-grad)"/>
+  <text x="28" y="30" text-anchor="start" fill="#FFFFFF" font-size="17" font-weight="700">4.9 UML Domain Class Diagram — Entities, Aggregate Root, Multiplicities &amp; Pure Domain Services</text>
+  <text x="28" y="50" text-anchor="start" fill="#94A3B8" font-size="12" font-family="monospace">3-Compartment UML Class Specification mapped to src/db/schema.ts and src/domain/rules.ts</text>
+  <rect x="1145" y="18" width="148" height="28" rx="6" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+  <text x="1219" y="36" text-anchor="middle" fill="#38BDF8" font-size="11" font-weight="700" font-family="monospace">OMG UML 2.5 · NexaHR</text>
+
+  
+  <!-- Relationships with Multiplicities -->
+  <line x1="165" y1="264" x2="165" y2="315" stroke="#0F172A" stroke-width="1.6" marker-start="url(#diamond-comp)"/>
+  <text x="175" y="292" fill="#0F172A" font-size="10.5" font-weight="700">1 .. 1..*</text>
+
+  <line x1="295" y1="210" x2="375" y2="240" stroke="#0F172A" stroke-width="1.6" marker-end="url(#arrow-open)"/>
+  <text x="332" y="218" text-anchor="middle" fill="#0F172A" font-size="10" font-weight="700">0..1 ── 1</text>
+
+  <line x1="295" y1="545" x2="375" y2="410" stroke="#0F172A" stroke-width="1.6" marker-start="url(#diamond-agg)"/>
+  <text x="330" y="468" text-anchor="middle" fill="#0F172A" font-size="10" font-weight="700">1 ── 0..*</text>
+
+  <line x1="670" y1="245" x2="750" y2="185" stroke="#0F172A" stroke-width="1.6" marker-start="url(#diamond-comp)"/>
+  <text x="710" y="205" text-anchor="middle" fill="#0F172A" font-size="10" font-weight="700">1 ── 0..*</text>
+
+  <line x1="670" y1="320" x2="750" y2="410" stroke="#0F172A" stroke-width="1.6" marker-start="url(#diamond-comp)"/>
+  <text x="710" y="360" text-anchor="middle" fill="#0F172A" font-size="10" font-weight="700">1 ── 4</text>
+
+  <line x1="670" y1="395" x2="750" y2="610" stroke="#0F172A" stroke-width="1.6" marker-end="url(#arrow-open)"/>
+  <text x="710" y="520" text-anchor="middle" fill="#0F172A" font-size="10" font-weight="700">1 ── 0..*</text>
+
+  <line x1="670" y1="280" x2="1040" y2="175" stroke="#0F172A" stroke-width="1.6" marker-start="url(#diamond-comp)"/>
+  <line x1="670" y1="350" x2="1040" y2="395" stroke="#0F172A" stroke-width="1.6" marker-end="url(#arrow-open)"/>
+  
+  <g transform="translate(35, 92)">
+    <rect x="0" y="0" width="260" height="181" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="260" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="30" width="260" height="12" fill="#0F172A"/>
+    <text x="130" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«entity»</text>
+    <text x="130" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">Profile</text>
+    <line x1="0" y1="137" x2="260" y2="137" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ id : int «PK»</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ uid : string «UQ»</text><text x="10" y="92" fill="#1E293B" font-size="10.5" font-family="monospace">+ email : string «UQ»</text><text x="10" y="109" fill="#1E293B" font-size="10.5" font-family="monospace">+ fullName : string</text><text x="10" y="126" fill="#1E293B" font-size="10.5" font-family="monospace">+ accountStatus : AccountStatus</text><text x="10" y="153" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ verifyPassword(raw) : bool</text><text x="10" y="170" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ isActive() : bool</text></g>
+
+  <g transform="translate(35, 315)">
+    <rect x="0" y="0" width="260" height="130" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="260" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="30" width="260" height="12" fill="#0F172A"/>
+    <text x="130" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«entity»</text>
+    <text x="130" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">UserRole</text>
+    <line x1="0" y1="103" x2="260" y2="103" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ id : int «PK»</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ profileId : int «FK»</text><text x="10" y="92" fill="#1E293B" font-size="10.5" font-family="monospace">+ role : RoleType</text><text x="10" y="119" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ hasPrivilege(action) : bool</text></g>
+
+  <g transform="translate(35, 495)">
+    <rect x="0" y="0" width="260" height="181" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="260" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="30" width="260" height="12" fill="#0F172A"/>
+    <text x="130" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«entity»</text>
+    <text x="130" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">Department</text>
+    <line x1="0" y1="154" x2="260" y2="154" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ id : int «PK»</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ code : string «UQ»</text><text x="10" y="92" fill="#1E293B" font-size="10.5" font-family="monospace">+ name : string</text><text x="10" y="109" fill="#1E293B" font-size="10.5" font-family="monospace">+ managerEmployeeId : int</text><text x="10" y="126" fill="#1E293B" font-size="10.5" font-family="monospace">+ budgetEgp : decimal(14,2)</text><text x="10" y="143" fill="#1E293B" font-size="10.5" font-family="monospace">+ isArchived : bool</text><text x="10" y="170" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ canArchive(activeCount) : bool</text></g>
+
+  <g transform="translate(35, 710)">
+    <rect x="0" y="0" width="260" height="181" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="260" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="30" width="260" height="12" fill="#0F172A"/>
+    <text x="130" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«entity»</text>
+    <text x="130" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">JobTitle</text>
+    <line x1="0" y1="154" x2="260" y2="154" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ id : int «PK»</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ code : string «UQ»</text><text x="10" y="92" fill="#1E293B" font-size="10.5" font-family="monospace">+ title : string</text><text x="10" y="109" fill="#1E293B" font-size="10.5" font-family="monospace">+ departmentId : int «FK»</text><text x="10" y="126" fill="#1E293B" font-size="10.5" font-family="monospace">+ minSalaryEgp : decimal(12,2)</text><text x="10" y="143" fill="#1E293B" font-size="10.5" font-family="monospace">+ maxSalaryEgp : decimal(12,2)</text><text x="10" y="170" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ isWithinBand(salary) : bool</text></g>
+
+  <g transform="translate(375, 195)">
+    <rect x="0" y="0" width="295" height="317" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="295" height="42" rx="8" fill="#1E1B4B"/>
+    <rect x="0" y="30" width="295" height="12" fill="#1E1B4B"/>
+    <text x="147.5" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«aggregateRoot»</text>
+    <text x="147.5" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">Employee</text>
+    <line x1="0" y1="256" x2="295" y2="256" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ id : int «PK»</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ employeeNumber : string «UQ»</text><text x="10" y="92" fill="#1E293B" font-size="10.5" font-family="monospace">+ profileId : int «FK»</text><text x="10" y="109" fill="#1E293B" font-size="10.5" font-family="monospace">+ firstName : string</text><text x="10" y="126" fill="#1E293B" font-size="10.5" font-family="monospace">+ lastName : string</text><text x="10" y="143" fill="#1E293B" font-size="10.5" font-family="monospace">+ email : string «UQ»</text><text x="10" y="160" fill="#1E293B" font-size="10.5" font-family="monospace">+ departmentId : int «FK»</text><text x="10" y="177" fill="#1E293B" font-size="10.5" font-family="monospace">+ jobTitleId : int «FK»</text><text x="10" y="194" fill="#1E293B" font-size="10.5" font-family="monospace">+ managerId : int «FK»</text><text x="10" y="211" fill="#1E293B" font-size="10.5" font-family="monospace">+ employmentStatus : EmpStatus</text><text x="10" y="228" fill="#1E293B" font-size="10.5" font-family="monospace">+ hireDate : date</text><text x="10" y="245" fill="#1E293B" font-size="10.5" font-family="monospace">+ onboardingProgress : int</text><text x="10" y="272" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ assignManager(mgrId) : void</text><text x="10" y="289" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ archiveNonDestructive() : void</text><text x="10" y="306" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ reactivate() : void</text></g>
+
+  <g transform="translate(750, 92)">
+    <rect x="0" y="0" width="260" height="215" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="260" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="30" width="260" height="12" fill="#0F172A"/>
+    <text x="130" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«entity»</text>
+    <text x="130" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">AttendanceRecord</text>
+    <line x1="0" y1="188" x2="260" y2="188" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ id : int «PK»</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ employeeId : int «FK»</text><text x="10" y="92" fill="#1E293B" font-size="10.5" font-family="monospace">+ attendanceDate : date</text><text x="10" y="109" fill="#1E293B" font-size="10.5" font-family="monospace">+ checkInUtc : timestamp</text><text x="10" y="126" fill="#1E293B" font-size="10.5" font-family="monospace">+ checkOutUtc : timestamp</text><text x="10" y="143" fill="#1E293B" font-size="10.5" font-family="monospace">+ workedMinutes : int</text><text x="10" y="160" fill="#1E293B" font-size="10.5" font-family="monospace">+ lateMinutes : int</text><text x="10" y="177" fill="#1E293B" font-size="10.5" font-family="monospace">+ status : AttendanceStatus</text><text x="10" y="204" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ markCorrected(mgrId) : void</text></g>
+
+  <g transform="translate(750, 340)">
+    <rect x="0" y="0" width="260" height="198" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="260" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="30" width="260" height="12" fill="#0F172A"/>
+    <text x="130" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«entity»</text>
+    <text x="130" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">LeaveEntitlement</text>
+    <line x1="0" y1="171" x2="260" y2="171" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ id : int «PK»</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ employeeId : int «FK»</text><text x="10" y="92" fill="#1E293B" font-size="10.5" font-family="monospace">+ leaveTypeId : int «FK»</text><text x="10" y="109" fill="#1E293B" font-size="10.5" font-family="monospace">+ year : int</text><text x="10" y="126" fill="#1E293B" font-size="10.5" font-family="monospace">+ allocatedDays : decimal(5,1)</text><text x="10" y="143" fill="#1E293B" font-size="10.5" font-family="monospace">+ usedDays : decimal(5,1)</text><text x="10" y="160" fill="#1E293B" font-size="10.5" font-family="monospace">+ pendingDays : decimal(5,1)</text><text x="10" y="187" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ availableDays() : decimal</text></g>
+
+  <g transform="translate(750, 560)">
+    <rect x="0" y="0" width="260" height="198" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="260" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="30" width="260" height="12" fill="#0F172A"/>
+    <text x="130" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«entity»</text>
+    <text x="130" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">LeaveRequest</text>
+    <line x1="0" y1="171" x2="260" y2="171" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ id : int «PK»</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ employeeId : int «FK»</text><text x="10" y="92" fill="#1E293B" font-size="10.5" font-family="monospace">+ leaveTypeId : int «FK»</text><text x="10" y="109" fill="#1E293B" font-size="10.5" font-family="monospace">+ startDate : date</text><text x="10" y="126" fill="#1E293B" font-size="10.5" font-family="monospace">+ endDate : date</text><text x="10" y="143" fill="#1E293B" font-size="10.5" font-family="monospace">+ totalDays : decimal(5,1)</text><text x="10" y="160" fill="#1E293B" font-size="10.5" font-family="monospace">+ status : LeaveStatus</text><text x="10" y="187" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ transitionTo(next) : bool</text></g>
+
+  <g transform="translate(1040, 92)">
+    <rect x="0" y="0" width="245" height="181" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="245" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="30" width="245" height="12" fill="#0F172A"/>
+    <text x="122.5" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«entity»</text>
+    <text x="122.5" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">CompensationRecord</text>
+    <line x1="0" y1="154" x2="245" y2="154" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ id : int «PK»</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ employeeId : int «FK»</text><text x="10" y="92" fill="#1E293B" font-size="10.5" font-family="monospace">+ baseSalaryEgp : decimal</text><text x="10" y="109" fill="#1E293B" font-size="10.5" font-family="monospace">+ housingAllowanceEgp : decimal</text><text x="10" y="126" fill="#1E293B" font-size="10.5" font-family="monospace">+ standardDeductionEgp : decimal</text><text x="10" y="143" fill="#1E293B" font-size="10.5" font-family="monospace">+ isCurrent : bool</text><text x="10" y="170" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ computeNetPay() : decimal</text></g>
+
+  <g transform="translate(1040, 325)">
+    <rect x="0" y="0" width="245" height="181" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="245" height="42" rx="8" fill="#0F172A"/>
+    <rect x="0" y="30" width="245" height="12" fill="#0F172A"/>
+    <text x="122.5" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«entity»</text>
+    <text x="122.5" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">PayrollItem</text>
+    <line x1="0" y1="154" x2="245" y2="154" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ id : int «PK»</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ payrollPeriodId : int «FK»</text><text x="10" y="92" fill="#1E293B" font-size="10.5" font-family="monospace">+ employeeId : int «FK»</text><text x="10" y="109" fill="#1E293B" font-size="10.5" font-family="monospace">+ grossPayEgp : decimal</text><text x="10" y="126" fill="#1E293B" font-size="10.5" font-family="monospace">+ netPayEgp : decimal</text><text x="10" y="143" fill="#1E293B" font-size="10.5" font-family="monospace">+ paymentStatus : PayStatus</text><text x="10" y="170" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ lockDisbursement() : void</text></g>
+
+  <g transform="translate(375, 575)">
+    <rect x="0" y="0" width="310" height="249" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="310" height="42" rx="8" fill="#312E81"/>
+    <rect x="0" y="30" width="310" height="12" fill="#312E81"/>
+    <text x="155" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«domainService»</text>
+    <text x="155" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">DomainRulesService (rules.ts)</text>
+    <line x1="0" y1="86" x2="310" y2="86" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ BRAND_NAME : &quot;NexaHR&quot;</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ CAIRO_WEEKEND : [&quot;Friday&quot;,&quot;Saturday&quot;]</text><text x="10" y="102" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ validateEmployeeInput(input) : Result</text><text x="10" y="119" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ hasCircularManagerRelationship() : bool</text><text x="10" y="136" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ generateNextEmployeeNumber() : string</text><text x="10" y="153" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ calculateWorkingLeaveDays() : number</text><text x="10" y="170" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ applyLeaveBalanceTransition() : Quota</text><text x="10" y="187" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ calculateAttendanceMetrics() : Metrics</text><text x="10" y="204" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ calculatePayrollItem() : PayrollBreakdown</text><text x="10" y="221" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ canPerformAction(roles, act) : bool</text><text x="10" y="238" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ validateDemoContactRequest() : Result</text></g>
+
+  <g transform="translate(1040, 555)">
+    <rect x="0" y="0" width="245" height="198" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <rect x="0" y="0" width="245" height="42" rx="8" fill="#065F46"/>
+    <rect x="0" y="30" width="245" height="12" fill="#065F46"/>
+    <text x="122.5" y="16" text-anchor="middle" fill="#38BDF8" font-size="9.5" font-family="monospace">«domainService»</text>
+    <text x="122.5" y="33" text-anchor="middle" fill="#FFFFFF" font-size="12.5" font-weight="700">LocalizationService</text>
+    <line x1="0" y1="86" x2="245" y2="86" stroke="#CBD5E1" stroke-width="1.4"/>
+  <text x="10" y="58" fill="#1E293B" font-size="10.5" font-family="monospace">+ defaultLocale : &quot;ar&quot; (ar-EG)</text><text x="10" y="75" fill="#1E293B" font-size="10.5" font-family="monospace">+ direction : &quot;rtl&quot; | &quot;ltr&quot;</text><text x="10" y="102" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ resolveInitialLocale() : Locale</text><text x="10" y="119" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ getDirectionForLocale() : Dir</text><text x="10" y="136" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ translateDepartmentName() : str</text><text x="10" y="153" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ translateJobTitle() : str</text><text x="10" y="170" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ translateRole() : str</text><text x="10" y="187" fill="#4F46E5" font-size="10.5" font-family="monospace" font-weight="600">+ translateStatus() : str</text></g>
+</svg>

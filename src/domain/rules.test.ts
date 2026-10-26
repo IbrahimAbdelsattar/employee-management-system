@@ -233,5 +233,32 @@ test('Egyptian Arabic (ar-EG) localization and RTL direction helpers resolve acc
   assert.equal(translateStatus('APPROVED', 'ar'), 'معتمد');
   assert.equal(translateRole('HR_MANAGER', 'ar'), 'مدير الموارد البشرية');
   assert.equal(translateLeaveType('Annual Leave', 'ar'), 'إجازة اعتيادية سنوية');
-});
 
+  const { BRAND_NAME, resolveInitialLocale, validateDemoContactRequest } = await import('./rules.ts');
+  assert.equal(BRAND_NAME, 'NexaHR');
+  assert.equal(resolveInitialLocale(null, null), 'ar');
+  assert.equal(resolveInitialLocale(undefined, undefined), 'ar');
+  assert.equal(resolveInitialLocale('en', 'ar'), 'en');
+  assert.equal(resolveInitialLocale(null, 'en'), 'en');
+
+  const invalidContact = validateDemoContactRequest(
+    { fullName: '', workEmail: 'not-an-email', companyName: '', companySize: '50-200' },
+    'ar'
+  );
+  assert.equal(invalidContact.valid, false);
+  assert.ok(invalidContact.errors.fullName);
+  assert.ok(invalidContact.errors.workEmail);
+  assert.ok(invalidContact.errors.companyName);
+
+  const validContact = validateDemoContactRequest(
+    {
+      fullName: 'أحمد محمود',
+      workEmail: 'ahmed@cairo-tech.eg',
+      companyName: 'CairoTech',
+      companySize: '50-200',
+    },
+    'ar'
+  );
+  assert.equal(validContact.valid, true);
+  assert.equal(validContact.referenceCode, 'NX-DEMO-CAI-2026');
+});

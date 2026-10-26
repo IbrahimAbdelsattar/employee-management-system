@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740" width="1200" height="740" direction="ltr" style="direction: ltr;" font-family="'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow-solid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#4F46E5"/>
+    </marker>
+    <marker id="arrow-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#475569" stroke-width="1.6"/>
+    </marker>
+    <marker id="arrow-inherit" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 10 6 L 1 10.5 z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.6"/>
+    </marker>
+    <marker id="diamond-comp" viewBox="0 0 14 10" refX="13" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M 1 5 L 7 1 L 13 5 L 7 9 z" fill="#0F172A" stroke="#0F172A" stroke-width="1.2"/>
+    </marker>
+    <marker id="diamond-agg" viewBox="0 0 14 10" refX="13" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M 1 5 L 7 1 L 13 5 L 7 9 z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <linearGradient id="hdr-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="indigo-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Canvas Card -->
+  <rect x="0" y="0" width="1200" height="740" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+
+  <!-- Top Title Banner -->
+  <rect x="0" y="0" width="1200" height="64" rx="14" fill="url(#hdr-grad)"/>
+  <rect x="0" y="48" width="1200" height="16" fill="url(#hdr-grad)"/>
+  <text x="28" y="30" text-anchor="start" fill="#FFFFFF" font-size="17" font-weight="700">4.4 UML Activity Diagram — Employee Creation &amp; Parallel Onboarding Provisioning</text>
+  <text x="28" y="50" text-anchor="start" fill="#94A3B8" font-size="12" font-family="monospace">Fork/Join Concurrency Model: Employee Row + 2026 Leave Quotas + EGP Compensation + Onboarding Tasks + Audit Log</text>
+  <rect x="1025" y="18" width="148" height="28" rx="6" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+  <text x="1099" y="36" text-anchor="middle" fill="#38BDF8" font-size="11" font-weight="700" font-family="monospace">OMG UML 2.5 · NexaHR</text>
+
+  
+  <!-- Initial Node -->
+  <circle cx="600" cy="105" r="11" fill="#0F172A"/>
+  <line x1="600" y1="116" x2="600" y2="145" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <!-- Step 1 -->
+  <rect x="410" y="145" width="380" height="48" rx="20" fill="#FFFFFF" stroke="#4F46E5" stroke-width="2"/>
+  <text x="600" y="167" text-anchor="middle" fill="#0F172A" font-size="12.5" font-weight="700">HR Manager or Admin Submits New Employee Form</text>
+  <text x="600" y="183" text-anchor="middle" fill="#64748B" font-size="10.5">POST /api/employees (First/Last Name, Email, Dept, Title, Manager, Salary)</text>
+
+  <line x1="600" y1="193" x2="600" y2="225" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <!-- Decision: RBAC & Domain Validation -->
+  <polygon points="600,225 745,265 600,305 455,265" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+  <text x="600" y="262" text-anchor="middle" fill="#92400E" font-size="11.5" font-weight="700">RBAC Authorized, Unique Email</text>
+  <text x="600" y="277" text-anchor="middle" fill="#92400E" font-size="10.5">&amp; No Circular Reporting Loop?</text>
+
+  <!-- Invalid Branch -->
+  <line x1="745" y1="265" x2="880" y2="265" stroke="#DC2626" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <text x="812" y="256" text-anchor="middle" fill="#DC2626" font-size="10.5" font-weight="700">[Invalid / Loop]</text>
+  <rect x="880" y="241" width="260" height="48" rx="14" fill="#FEF2F2" stroke="#DC2626" stroke-width="1.8"/>
+  <text x="1010" y="262" text-anchor="middle" fill="#991B1B" font-size="12" font-weight="700">Abort &amp; Return HTTP 400 / 403</text>
+  <text x="1010" y="278" text-anchor="middle" fill="#B91C1C" font-size="10.5">Zero Partial Rows Written</text>
+
+  <!-- Valid Branch -->
+  <line x1="600" y1="305" x2="600" y2="345" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <text x="650" y="330" fill="#059669" font-size="10.5" font-weight="700">[Valid Input]</text>
+
+  <!-- Step 2: Generate Code & Insert Employee -->
+  <rect x="400" y="345" width="400" height="50" rx="20" fill="#FFFFFF" stroke="#0F172A" stroke-width="2"/>
+  <text x="600" y="367" text-anchor="middle" fill="#0F172A" font-size="12.5" font-weight="700">generateNextEmployeeNumber() → NW-EMP-026</text>
+  <text x="600" y="384" text-anchor="middle" fill="#475569" font-size="10.5">Insert Master Record into PostgreSQL employees Table</text>
+
+  <line x1="600" y1="395" x2="600" y2="430" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <!-- UML Fork Bar -->
+  <rect x="110" y="430" width="980" height="8" rx="4" fill="#0F172A"/>
+  <text x="1040" y="422" text-anchor="end" fill="#475569" font-size="10" font-family="monospace">«fork» Parallel Auto-Provisioning</text>
+
+  <!-- 4 Parallel Provisioning Branches -->
+  <line x1="215" y1="438" x2="215" y2="485" stroke="#4F46E5" stroke-width="1.8" marker-end="url(#arrow-indigo)"/>
+  <line x1="470" y1="438" x2="470" y2="485" stroke="#4F46E5" stroke-width="1.8" marker-end="url(#arrow-indigo)"/>
+  <line x1="730" y1="438" x2="730" y2="485" stroke="#4F46E5" stroke-width="1.8" marker-end="url(#arrow-indigo)"/>
+  <line x1="985" y1="438" x2="985" y2="485" stroke="#4F46E5" stroke-width="1.8" marker-end="url(#arrow-indigo)"/>
+
+  <rect x="95" y="485" width="240" height="64" rx="16" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.8"/>
+  <text x="215" y="512" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">Provision Leave Quotas</text>
+  <text x="215" y="530" text-anchor="middle" fill="#64748B" font-size="10.5">Insert 2026 leave_entitlements</text>
+
+  <rect x="350" y="485" width="240" height="64" rx="16" fill="#FFFFFF" stroke="#059669" stroke-width="1.8"/>
+  <text x="470" y="512" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">Provision EGP Compensation</text>
+  <text x="470" y="530" text-anchor="middle" fill="#64748B" font-size="10.5">Insert compensation_records</text>
+
+  <rect x="610" y="485" width="240" height="64" rx="16" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.8"/>
+  <text x="730" y="512" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">Create Onboarding Checklist</text>
+  <text x="730" y="530" text-anchor="middle" fill="#64748B" font-size="10.5">IT, HR, Finance &amp; Manager Tasks</text>
+
+  <rect x="865" y="485" width="240" height="64" rx="16" fill="#FFFFFF" stroke="#D97706" stroke-width="1.8"/>
+  <text x="985" y="512" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">Record Security Audit Log</text>
+  <text x="985" y="530" text-anchor="middle" fill="#64748B" font-size="10.5">Insert EMPLOYEE_CREATE Event</text>
+
+  <!-- Join Bar -->
+  <line x1="215" y1="549" x2="215" y2="595" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <line x1="470" y1="549" x2="470" y2="595" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <line x1="730" y1="549" x2="730" y2="595" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <line x1="985" y1="549" x2="985" y2="595" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <rect x="110" y="595" width="980" height="8" rx="4" fill="#0F172A"/>
+  <text x="1040" y="622" text-anchor="end" fill="#475569" font-size="10" font-family="monospace">«join» Transaction Synchronized</text>
+
+  <line x1="600" y1="603" x2="600" y2="665" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <circle cx="600" cy="680" r="14" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.2"/>
+  <circle cx="600" cy="680" r="8" fill="#0F172A"/>
+  <text x="600" y="710" text-anchor="middle" fill="#0F172A" font-size="11.5" font-weight="700">Return HTTP 201 Created &amp; Refresh Workspace</text>
+  
+</svg>

@@ -163,7 +163,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             {!collapsed && (
               <div className="overflow-hidden">
                 <span className="block font-display font-bold text-white text-base tracking-tight whitespace-nowrap">
-                  {t('NexaHR', 'نكسا إتش آر (NexaHR)')}
+                  NexaHR
                 </span>
                 <span className="block text-[11px] text-slate-400 whitespace-nowrap">
                   {t(
@@ -257,7 +257,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           <aside className="relative w-72 max-w-xs bg-[#0F172A] text-white flex flex-col z-10">
             <div className="h-16 flex items-center justify-between px-5 border-b border-slate-800">
               <span className="font-display font-bold text-lg">
-                {t('NexaHR', 'نكسا إتش آر')}
+                NexaHR
               </span>
               <button
                 onClick={() => setMobileMenuOpen(false)}

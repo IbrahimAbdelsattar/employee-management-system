@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 670" width="1280" height="670" direction="ltr" style="direction: ltr;" font-family="'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow-solid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#4F46E5"/>
+    </marker>
+    <marker id="arrow-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#475569" stroke-width="1.6"/>
+    </marker>
+    <marker id="arrow-inherit" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 10 6 L 1 10.5 z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.6"/>
+    </marker>
+    <marker id="diamond-comp" viewBox="0 0 14 10" refX="13" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M 1 5 L 7 1 L 13 5 L 7 9 z" fill="#0F172A" stroke="#0F172A" stroke-width="1.2"/>
+    </marker>
+    <marker id="diamond-agg" viewBox="0 0 14 10" refX="13" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M 1 5 L 7 1 L 13 5 L 7 9 z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <linearGradient id="hdr-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="indigo-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Canvas Card -->
+  <rect x="0" y="0" width="1280" height="670" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+
+  <!-- Top Title Banner -->
+  <rect x="0" y="0" width="1280" height="64" rx="14" fill="url(#hdr-grad)"/>
+  <rect x="0" y="48" width="1280" height="16" fill="url(#hdr-grad)"/>
+  <text x="28" y="30" text-anchor="start" fill="#FFFFFF" font-size="17" font-weight="700">4.7 UML Sequence Diagram — Default Egyptian Arabic (ar-EG RTL), Auth &amp; RBAC Bootstrap</text>
+  <text x="28" y="50" text-anchor="start" fill="#94A3B8" font-size="12" font-family="monospace">Traces resolveInitialLocale() -&gt; dir=&quot;rtl&quot; -&gt; POST /api/auth/login -&gt; Scoped GET /api/bootstrap</text>
+  <rect x="1105" y="18" width="148" height="28" rx="6" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+  <text x="1179" y="36" text-anchor="middle" fill="#38BDF8" font-size="11" font-weight="700" font-family="monospace">OMG UML 2.5 · NexaHR</text>
+
+  
+    <line x1="120" y1="138" x2="120" y2="635" stroke="#94A3B8" stroke-width="1.6" stroke-dasharray="6,4"/>
+    <rect x="32" y="86" width="176" height="48" rx="8" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.8"/>
+    <text x="120" y="106" text-anchor="middle" fill="#4F46E5" font-size="10" font-family="monospace" font-weight="700">«actor»</text>
+    <text x="120" y="123" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">:User</text>
+    <rect x="114" y="150" width="12" height="420" rx="3" fill="#E2E8F0" stroke="#64748B" stroke-width="1"/>
+    
+    <line x1="350" y1="138" x2="350" y2="635" stroke="#94A3B8" stroke-width="1.6" stroke-dasharray="6,4"/>
+    <rect x="262" y="86" width="176" height="48" rx="8" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+    <text x="350" y="106" text-anchor="middle" fill="#4F46E5" font-size="10" font-family="monospace" font-weight="700">«boundary»</text>
+    <text x="350" y="123" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">:LandingAndLoginUI</text>
+    <rect x="344" y="150" width="12" height="420" rx="3" fill="#E2E8F0" stroke="#64748B" stroke-width="1"/>
+    
+    <line x1="580" y1="138" x2="580" y2="635" stroke="#94A3B8" stroke-width="1.6" stroke-dasharray="6,4"/>
+    <rect x="492" y="86" width="176" height="48" rx="8" fill="#FFFFFF" stroke="#059669" stroke-width="1.8"/>
+    <text x="580" y="106" text-anchor="middle" fill="#4F46E5" font-size="10" font-family="monospace" font-weight="700">«context»</text>
+    <text x="580" y="123" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">:LanguageContext</text>
+    <rect x="574" y="150" width="12" height="420" rx="3" fill="#E2E8F0" stroke="#64748B" stroke-width="1"/>
+    
+    <line x1="810" y1="138" x2="810" y2="635" stroke="#94A3B8" stroke-width="1.6" stroke-dasharray="6,4"/>
+    <rect x="722" y="86" width="176" height="48" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.8"/>
+    <text x="810" y="106" text-anchor="middle" fill="#4F46E5" font-size="10" font-family="monospace" font-weight="700">«context»</text>
+    <text x="810" y="123" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">:AuthContext</text>
+    <rect x="804" y="150" width="12" height="420" rx="3" fill="#E2E8F0" stroke="#64748B" stroke-width="1"/>
+    
+    <line x1="1030" y1="138" x2="1030" y2="635" stroke="#94A3B8" stroke-width="1.6" stroke-dasharray="6,4"/>
+    <rect x="942" y="86" width="176" height="48" rx="8" fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.8"/>
+    <text x="1030" y="106" text-anchor="middle" fill="#4F46E5" font-size="10" font-family="monospace" font-weight="700">«control»</text>
+    <text x="1030" y="123" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">:ExpressAPI</text>
+    <rect x="1024" y="150" width="12" height="420" rx="3" fill="#E2E8F0" stroke="#64748B" stroke-width="1"/>
+    
+    <line x1="1190" y1="138" x2="1190" y2="635" stroke="#94A3B8" stroke-width="1.6" stroke-dasharray="6,4"/>
+    <rect x="1102" y="86" width="176" height="48" rx="8" fill="#FFFFFF" stroke="#D97706" stroke-width="1.8"/>
+    <text x="1190" y="106" text-anchor="middle" fill="#4F46E5" font-size="10" font-family="monospace" font-weight="700">«database»</text>
+    <text x="1190" y="123" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">:PostgreSQL</text>
+    <rect x="1184" y="150" width="12" height="420" rx="3" fill="#E2E8F0" stroke="#64748B" stroke-width="1"/>
+    
+    <rect x="42" y="143" width="1196" height="140" rx="6" fill="none" stroke="#4F46E5" stroke-width="1.6" stroke-dasharray="4,2"/>
+    <polygon points="42,143 125,143 125,157 115,165 42,165" fill="#4F46E5"/>
+    <text x="80" y="158" text-anchor="middle" fill="#FFFFFF" font-size="10.5" font-weight="700" font-family="monospace">alt</text>
+    <text x="138" y="158" fill="#1E1B4B" font-size="11" font-weight="700" font-family="monospace">[Default Mount: Egyptian Arabic ar-EG RTL]</text>
+    
+    <rect x="42" y="269" width="1196" height="308" rx="6" fill="none" stroke="#4F46E5" stroke-width="1.6" stroke-dasharray="4,2"/>
+    <polygon points="42,269 125,269 125,283 115,291 42,291" fill="#4F46E5"/>
+    <text x="80" y="284" text-anchor="middle" fill="#FFFFFF" font-size="10.5" font-weight="700" font-family="monospace">alt</text>
+    <text x="138" y="284" fill="#1E1B4B" font-size="11" font-weight="700" font-family="monospace">[Authentication &amp; Role-Scoped Workspace Hydration]</text>
+    
+    <line x1="126" y1="179" x2="344" y2="179" stroke="#1E293B" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+    <rect x="70" y="160" width="330" height="16" rx="3" fill="#F8FAFC" opacity="0.92"/>
+    <text x="235" y="172" text-anchor="middle" fill="#0F172A" font-size="11" font-weight="600" font-family="monospace">1. open NexaHR Landing Page (/)</text>
+    
+    <line x1="356" y1="221" x2="574" y2="221" stroke="#1E293B" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+    <rect x="300" y="202" width="330" height="16" rx="3" fill="#F8FAFC" opacity="0.92"/>
+    <text x="465" y="214" text-anchor="middle" fill="#0F172A" font-size="11" font-weight="600" font-family="monospace">2. resolveInitialLocale() -&gt; &quot;ar&quot;</text>
+    
+    <line x1="574" y1="263" x2="356" y2="263" stroke="#059669" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arrow-open)"/>
+    <rect x="300" y="244" width="330" height="16" rx="3" fill="#F8FAFC" opacity="0.92"/>
+    <text x="465" y="256" text-anchor="middle" fill="#047857" font-size="11" font-weight="600" font-family="monospace">3. set document.dir=&quot;rtl&quot;, lang=&quot;ar-EG&quot;</text>
+    
+    <line x1="126" y1="305" x2="344" y2="305" stroke="#1E293B" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+    <rect x="70" y="286" width="330" height="16" rx="3" fill="#F8FAFC" opacity="0.92"/>
+    <text x="235" y="298" text-anchor="middle" fill="#0F172A" font-size="11" font-weight="600" font-family="monospace">4. submitLogin(email, password) or 1-Click Role</text>
+    
+    <line x1="356" y1="347" x2="804" y2="347" stroke="#1E293B" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+    <rect x="415" y="328" width="330" height="16" rx="3" fill="#F8FAFC" opacity="0.92"/>
+    <text x="580" y="340" text-anchor="middle" fill="#0F172A" font-size="11" font-weight="600" font-family="monospace">5. loginWithCredentials(email, password)</text>
+    
+    <line x1="816" y1="389" x2="1024" y2="389" stroke="#1E293B" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+    <rect x="755" y="370" width="330" height="16" rx="3" fill="#F8FAFC" opacity="0.92"/>
+    <text x="920" y="382" text-anchor="middle" fill="#0F172A" font-size="11" font-weight="600" font-family="monospace">6. POST /api/auth/login</text>
+    
+    <line x1="1036" y1="431" x2="1184" y2="431" stroke="#1E293B" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+    <rect x="945" y="412" width="330" height="16" rx="3" fill="#F8FAFC" opacity="0.92"/>
+    <text x="1110" y="424" text-anchor="middle" fill="#0F172A" font-size="11" font-weight="600" font-family="monospace">7. Verify profile + Load user_roles + Write USER_LOGIN audit</text>
+    
+    <line x1="1024" y1="473" x2="816" y2="473" stroke="#059669" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arrow-open)"/>
+    <rect x="755" y="454" width="330" height="16" rx="3" fill="#F8FAFC" opacity="0.92"/>
+    <text x="920" y="466" text-anchor="middle" fill="#047857" font-size="11" font-weight="600" font-family="monospace">8. Return signed HMAC token + Actor role scope</text>
+    
+    <line x1="816" y1="515" x2="1024" y2="515" stroke="#1E293B" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+    <rect x="755" y="496" width="330" height="16" rx="3" fill="#F8FAFC" opacity="0.92"/>
+    <text x="920" y="508" text-anchor="middle" fill="#0F172A" font-size="11" font-weight="600" font-family="monospace">9. GET /api/bootstrap (Bearer Token)</text>
+    
+    <line x1="1024" y1="557" x2="816" y2="557" stroke="#059669" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arrow-open)"/>
+    <rect x="755" y="538" width="330" height="16" rx="3" fill="#F8FAFC" opacity="0.92"/>
+    <text x="920" y="550" text-anchor="middle" fill="#047857" font-size="11" font-weight="600" font-family="monospace">10. Return RBAC-filtered WorkspaceData (26 tables)</text>
+    
+</svg>

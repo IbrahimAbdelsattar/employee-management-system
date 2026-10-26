@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 780" width="1260" height="780" direction="ltr" style="direction: ltr;" font-family="'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow-solid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#4F46E5"/>
+    </marker>
+    <marker id="arrow-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#475569" stroke-width="1.6"/>
+    </marker>
+    <marker id="arrow-inherit" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 10 6 L 1 10.5 z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.6"/>
+    </marker>
+    <marker id="diamond-comp" viewBox="0 0 14 10" refX="13" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M 1 5 L 7 1 L 13 5 L 7 9 z" fill="#0F172A" stroke="#0F172A" stroke-width="1.2"/>
+    </marker>
+    <marker id="diamond-agg" viewBox="0 0 14 10" refX="13" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M 1 5 L 7 1 L 13 5 L 7 9 z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <linearGradient id="hdr-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="indigo-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Canvas Card -->
+  <rect x="0" y="0" width="1260" height="780" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+
+  <!-- Top Title Banner -->
+  <rect x="0" y="0" width="1260" height="64" rx="14" fill="url(#hdr-grad)"/>
+  <rect x="0" y="48" width="1260" height="16" fill="url(#hdr-grad)"/>
+  <text x="28" y="30" text-anchor="start" fill="#FFFFFF" font-size="17" font-weight="700">4.12 UML Component &amp; 5-Layer Enterprise Software Architecture Diagram</text>
+  <text x="28" y="50" text-anchor="start" fill="#94A3B8" font-size="12" font-family="monospace">Strict Unidirectional Dependency Flow: Presentation -&gt; Context -&gt; Express API -&gt; Pure Domain -&gt; PostgreSQL</text>
+  <rect x="1085" y="18" width="148" height="28" rx="6" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+  <text x="1159" y="36" text-anchor="middle" fill="#38BDF8" font-size="11" font-weight="700" font-family="monospace">OMG UML 2.5 · NexaHR</text>
+
+  
+    <rect x="40" y="92" width="1180" height="106" rx="12" fill="#EFF6FF" stroke="#3B82F6" stroke-width="2"/>
+    <text x="60" y="116" fill="#0F172A" font-size="13" font-weight="700">Layer 1: Presentation Layer (React 19, Tailwind CSS 4, Motion, Bilingual RTL/LTR)</text>
+    
+      <rect x="60" y="128" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="76" y="151" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» LandingPage</text>
+      <text x="76" y="170" fill="#475569" font-size="11">Hero, EGP Simulator &amp; Contact Modal</text>
+      
+      <rect x="445" y="128" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="461" y="151" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» AppShell</text>
+      <text x="461" y="170" fill="#475569" font-size="11">RTL/LTR Layout, Sidebar &amp; Role Switcher</text>
+      
+      <rect x="830" y="128" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="846" y="151" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» 12 Feature Views</text>
+      <text x="846" y="170" fill="#475569" font-size="11">Dashboard, Employees, Org, Leave, Payroll...</text>
+      
+      <line x1="240" y1="198" x2="240" y2="222" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      <line x1="630" y1="198" x2="630" y2="222" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      <line x1="1020" y1="198" x2="1020" y2="222" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      
+    <rect x="40" y="222" width="1180" height="106" rx="12" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+    <text x="60" y="246" fill="#0F172A" font-size="13" font-weight="700">Layer 2: Application &amp; State Orchestration Layer (React Context Hooks)</text>
+    
+      <rect x="60" y="258" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="76" y="281" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» LanguageContext</text>
+      <text x="76" y="300" fill="#475569" font-size="11">Default Egyptian Arabic (ar-EG RTL) &amp; Translators</text>
+      
+      <rect x="445" y="258" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="461" y="281" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» AuthContext</text>
+      <text x="461" y="300" fill="#475569" font-size="11">Session Token, /api/bootstrap &amp; Instant Personas</text>
+      
+      <rect x="830" y="258" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="846" y="281" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» CSV Exporter</text>
+      <text x="846" y="300" fill="#475569" font-size="11">Client-side Roster, Attendance &amp; Leave Reports</text>
+      
+      <line x1="240" y1="328" x2="240" y2="352" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      <line x1="630" y1="328" x2="630" y2="352" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      <line x1="1020" y1="328" x2="1020" y2="352" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      
+    <rect x="40" y="352" width="1180" height="106" rx="12" fill="#F0FDF4" stroke="#059669" stroke-width="2"/>
+    <text x="60" y="376" fill="#0F172A" font-size="13" font-weight="700">Layer 3: Backend API &amp; Security Middleware Layer (Express 4 on Port 3000)</text>
+    
+      <rect x="60" y="388" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="76" y="411" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» requireAuth Middleware</text>
+      <text x="76" y="430" fill="#475569" font-size="11">HMAC &amp; Firebase Token Verification</text>
+      
+      <rect x="445" y="388" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="461" y="411" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» RBAC Policy Filter</text>
+      <text x="461" y="430" fill="#475569" font-size="11">Row-Level Compensation &amp; Team Scope Guard</text>
+      
+      <rect x="830" y="388" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="846" y="411" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» REST Controllers</text>
+      <text x="846" y="430" fill="#475569" font-size="11">32 Endpoints in server.ts + Audit Dispatcher</text>
+      
+      <line x1="240" y1="458" x2="240" y2="482" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      <line x1="630" y1="458" x2="630" y2="482" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      <line x1="1020" y1="458" x2="1020" y2="482" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      
+    <rect x="40" y="482" width="1180" height="106" rx="12" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+    <text x="60" y="506" fill="#0F172A" font-size="13" font-weight="700">Layer 4: Pure Domain Layer (src/domain/rules.ts — 100% Decoupled &amp; Unit Tested)</text>
+    
+      <rect x="60" y="518" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="76" y="541" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«service» Leave &amp; Attendance Engine</text>
+      <text x="76" y="560" fill="#475569" font-size="11">Fri/Sat + Cairo Holidays &amp; Shift Grace Math</text>
+      
+      <rect x="445" y="518" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="461" y="541" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«service» EGP Payroll Calculator</text>
+      <text x="461" y="560" fill="#475569" font-size="11">Gross/Net EGP &amp; Unpaid Leave Deduction</text>
+      
+      <rect x="830" y="518" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="846" y="541" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«service» Hierarchy &amp; RBAC Validator</text>
+      <text x="846" y="560" fill="#475569" font-size="11">Circular Manager Detection &amp; Role Matrix</text>
+      
+      <line x1="240" y1="588" x2="240" y2="612" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      <line x1="630" y1="588" x2="630" y2="612" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      <line x1="1020" y1="588" x2="1020" y2="612" stroke="#334155" stroke-width="2" marker-end="url(#arrow-solid)"/>
+      
+    <rect x="40" y="612" width="1180" height="106" rx="12" fill="#F8FAFC" stroke="#0F172A" stroke-width="2"/>
+    <text x="60" y="636" fill="#0F172A" font-size="13" font-weight="700">Layer 5: Persistence &amp; Relational Database Layer (Drizzle ORM + Google Cloud SQL)</text>
+    
+      <rect x="60" y="648" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="76" y="671" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» Drizzle Schema</text>
+      <text x="76" y="690" fill="#475569" font-size="11">src/db/schema.ts (26 Typed Tables)</text>
+      
+      <rect x="445" y="648" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="461" y="671" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«component» Seed &amp; Migration Engine</text>
+      <text x="461" y="690" fill="#475569" font-size="11">src/db/seed.ts (25 NexaWorks Employees)</text>
+      
+      <rect x="830" y="648" width="360" height="56" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <text x="846" y="671" fill="#4F46E5" font-size="11.5" font-weight="700" font-family="monospace">«database» Cloud SQL PostgreSQL 16</text>
+      <text x="846" y="690" fill="#475569" font-size="11">Instance in europe-west2 (Transactional ACID)</text>
+      
+</svg>

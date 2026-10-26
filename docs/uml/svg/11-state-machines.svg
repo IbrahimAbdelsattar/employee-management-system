@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 820" width="1280" height="820" direction="ltr" style="direction: ltr;" font-family="'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow-solid" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#4F46E5"/>
+    </marker>
+    <marker id="arrow-open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 9 5 L 1 8.5" fill="none" stroke="#475569" stroke-width="1.6"/>
+    </marker>
+    <marker id="arrow-inherit" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M 1 1.5 L 10 6 L 1 10.5 z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.6"/>
+    </marker>
+    <marker id="diamond-comp" viewBox="0 0 14 10" refX="13" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M 1 5 L 7 1 L 13 5 L 7 9 z" fill="#0F172A" stroke="#0F172A" stroke-width="1.2"/>
+    </marker>
+    <marker id="diamond-agg" viewBox="0 0 14 10" refX="13" refY="5" markerWidth="10" markerHeight="8" orient="auto">
+      <path d="M 1 5 L 7 1 L 13 5 L 7 9 z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.4"/>
+    </marker>
+    <linearGradient id="hdr-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="indigo-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Canvas Card -->
+  <rect x="0" y="0" width="1280" height="820" rx="14" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="2"/>
+
+  <!-- Top Title Banner -->
+  <rect x="0" y="0" width="1280" height="64" rx="14" fill="url(#hdr-grad)"/>
+  <rect x="0" y="48" width="1280" height="16" fill="url(#hdr-grad)"/>
+  <text x="28" y="30" text-anchor="start" fill="#FFFFFF" font-size="17" font-weight="700">4.11 UML State Machine Diagrams — Leave, Kanban Task, Performance &amp; EGP Payroll Lifecycles</text>
+  <text x="28" y="50" text-anchor="start" fill="#94A3B8" font-size="12" font-family="monospace">Formal State Transitions, Entry Effects &amp; Guard Conditions enforced in src/domain/rules.ts</text>
+  <rect x="1105" y="18" width="148" height="28" rx="6" fill="#1E293B" stroke="#475569" stroke-width="1"/>
+  <text x="1179" y="36" text-anchor="middle" fill="#38BDF8" font-size="11" font-weight="700" font-family="monospace">OMG UML 2.5 · NexaHR</text>
+
+  
+  <!-- 4 Quadrant Cards -->
+  <!-- Quadrant A: Leave State Machine -->
+  <rect x="28" y="84" width="600" height="345" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8"/>
+  <rect x="28" y="84" width="600" height="36" rx="12" fill="#EEF2FF"/>
+  <text x="46" y="107" fill="#312E81" font-size="13" font-weight="700">A. Leave Request &amp; Entitlement Balance State Machine</text>
+
+  <circle cx="75" cy="215" r="10" fill="#0F172A"/>
+  <line x1="85" y1="215" x2="145" y2="215" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <rect x="145" y="182" width="145" height="66" rx="14" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+  <text x="217" y="206" text-anchor="middle" fill="#92400E" font-size="12" font-weight="700">PENDING</text>
+  <line x1="145" y1="214" x2="290" y2="214" stroke="#F59E0B" stroke-width="1"/>
+  <text x="217" y="232" text-anchor="middle" fill="#78350F" font-size="9.5" font-family="monospace">entry / pending += days</text>
+
+  <line x1="290" y1="198" x2="385" y2="155" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <text x="335" y="165" text-anchor="middle" fill="#059669" font-size="9.5" font-weight="700">[Approve]</text>
+
+  <rect x="385" y="128" width="165" height="58" rx="14" fill="#ECFDF5" stroke="#059669" stroke-width="2"/>
+  <text x="467" y="150" text-anchor="middle" fill="#065F46" font-size="12" font-weight="700">APPROVED</text>
+  <text x="467" y="170" text-anchor="middle" fill="#047857" font-size="9.5" font-family="monospace">entry / used += days</text>
+
+  <line x1="290" y1="230" x2="385" y2="275" stroke="#DC2626" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <text x="335" y="268" text-anchor="middle" fill="#DC2626" font-size="9.5" font-weight="700">[Reject]</text>
+
+  <rect x="385" y="250" width="165" height="58" rx="14" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+  <text x="467" y="272" text-anchor="middle" fill="#991B1B" font-size="12" font-weight="700">REJECTED</text>
+  <text x="467" y="292" text-anchor="middle" fill="#B91C1C" font-size="9.5" font-family="monospace">entry / pending -= days</text>
+
+  <line x1="217" y1="248" x2="217" y2="345" stroke="#475569" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <line x1="467" y1="186" x2="320" y2="365" stroke="#475569" stroke-width="1.6" stroke-dasharray="4,3" marker-end="url(#arrow-solid)"/>
+
+  <rect x="145" y="345" width="175" height="54" rx="14" fill="#F1F5F9" stroke="#475569" stroke-width="2"/>
+  <text x="232" y="367" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">CANCELLED</text>
+  <text x="232" y="385" text-anchor="middle" fill="#475569" font-size="9.5" font-family="monospace">entry / restore quota</text>
+
+  <!-- Quadrant B: Kanban Task Lifecycle -->
+  <rect x="652" y="84" width="600" height="345" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8"/>
+  <rect x="652" y="84" width="600" height="36" rx="12" fill="#E0F2FE"/>
+  <text x="670" y="107" fill="#0369A1" font-size="13" font-weight="700">B. Kanban Task Execution State Machine</text>
+
+  <circle cx="695" cy="205" r="10" fill="#0F172A"/>
+  <line x1="705" y1="205" x2="745" y2="205" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <rect x="745" y="180" width="105" height="50" rx="12" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+  <text x="797" y="210" text-anchor="middle" fill="#0F172A" font-size="11.5" font-weight="700">TODO</text>
+
+  <line x1="850" y1="205" x2="900" y2="205" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <rect x="900" y="180" width="130" height="50" rx="12" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+  <text x="965" y="210" text-anchor="middle" fill="#312E81" font-size="11.5" font-weight="700">IN_PROGRESS</text>
+
+  <line x1="965" y1="230" x2="965" y2="320" stroke="#DC2626" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <rect x="900" y="320" width="130" height="50" rx="12" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+  <text x="965" y="350" text-anchor="middle" fill="#991B1B" font-size="11.5" font-weight="700">BLOCKED</text>
+
+  <line x1="1030" y1="205" x2="1085" y2="205" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <rect x="1085" y="180" width="130" height="50" rx="12" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+  <text x="1150" y="210" text-anchor="middle" fill="#92400E" font-size="11.5" font-weight="700">IN_REVIEW</text>
+
+  <line x1="1150" y1="230" x2="1150" y2="320" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+  <rect x="1085" y="320" width="130" height="50" rx="12" fill="#ECFDF5" stroke="#059669" stroke-width="2"/>
+  <text x="1150" y="350" text-anchor="middle" fill="#065F46" font-size="11.5" font-weight="700">COMPLETED</text>
+
+  <!-- Quadrant C: Performance Review State Machine -->
+  <rect x="28" y="452" width="600" height="335" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8"/>
+  <rect x="28" y="452" width="600" height="36" rx="12" fill="#ECFDF5"/>
+  <text x="46" y="475" fill="#065F46" font-size="13" font-weight="700">C. Performance Review Appraisal State Machine</text>
+
+  <circle cx="72" cy="615" r="10" fill="#0F172A"/>
+  <line x1="82" y1="615" x2="125" y2="615" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <rect x="125" y="582" width="130" height="66" rx="14" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+  <text x="190" y="608" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">DRAFT</text>
+  <text x="190" y="628" text-anchor="middle" fill="#64748B" font-size="9.5" font-family="monospace">Confidential to Mgr</text>
+
+  <line x1="255" y1="615" x2="310" y2="615" stroke="#4F46E5" stroke-width="1.8" marker-end="url(#arrow-indigo)"/>
+  <text x="282" y="604" text-anchor="middle" fill="#4F46E5" font-size="9.5" font-weight="700">publish()</text>
+
+  <rect x="310" y="582" width="135" height="66" rx="14" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+  <text x="377" y="608" text-anchor="middle" fill="#312E81" font-size="12" font-weight="700">PUBLISHED</text>
+  <text x="377" y="628" text-anchor="middle" fill="#4F46E5" font-size="9.5" font-family="monospace">Visible to Employee</text>
+
+  <line x1="445" y1="615" x2="490" y2="615" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <rect x="490" y="582" width="120" height="66" rx="14" fill="#ECFDF5" stroke="#059669" stroke-width="2"/>
+  <text x="550" y="608" text-anchor="middle" fill="#065F46" font-size="11" font-weight="700">ACKNOWLEDGED</text>
+  <text x="550" y="628" text-anchor="middle" fill="#047857" font-size="9.5" font-family="monospace">Signed Off</text>
+
+  <!-- Quadrant D: Payroll Period State Machine -->
+  <rect x="652" y="452" width="600" height="335" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8"/>
+  <rect x="652" y="452" width="600" height="36" rx="12" fill="#FEF3C7"/>
+  <text x="670" y="475" fill="#92400E" font-size="13" font-weight="700">D. EGP Payroll Cycle Governance State Machine</text>
+
+  <circle cx="695" cy="615" r="10" fill="#0F172A"/>
+  <line x1="705" y1="615" x2="750" y2="615" stroke="#334155" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <rect x="750" y="582" width="135" height="66" rx="14" fill="#F8FAFC" stroke="#475569" stroke-width="2"/>
+  <text x="817" y="608" text-anchor="middle" fill="#0F172A" font-size="12" font-weight="700">DRAFT</text>
+  <text x="817" y="628" text-anchor="middle" fill="#64748B" font-size="9.5" font-family="monospace">Simulation Open</text>
+
+  <line x1="885" y1="615" x2="940" y2="615" stroke="#4F46E5" stroke-width="1.8" marker-end="url(#arrow-indigo)"/>
+  <text x="912" y="604" text-anchor="middle" fill="#4F46E5" font-size="9.5" font-weight="700">approve()</text>
+
+  <rect x="940" y="582" width="135" height="66" rx="14" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+  <text x="1007" y="608" text-anchor="middle" fill="#312E81" font-size="12" font-weight="700">APPROVED</text>
+  <text x="1007" y="628" text-anchor="middle" fill="#4F46E5" font-size="9.5" font-family="monospace">HR Verified</text>
+
+  <line x1="1075" y1="615" x2="1120" y2="615" stroke="#059669" stroke-width="1.8" marker-end="url(#arrow-solid)"/>
+
+  <rect x="1120" y="582" width="110" height="66" rx="14" fill="#ECFDF5" stroke="#059669" stroke-width="2"/>
+  <text x="1175" y="608" text-anchor="middle" fill="#065F46" font-size="12" font-weight="700">PAID</text>
+  <text x="1175" y="628" text-anchor="middle" fill="#047857" font-size="9.5" font-family="monospace">Disbursed</text>
+  
+</svg>

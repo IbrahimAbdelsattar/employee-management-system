@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { AppShell } from './components/layout/AppShell';
+import { LandingPage } from './features/landing/LandingPage';
 import { LoginPage } from './features/auth/LoginPage';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { EmployeesPage } from './features/employees/EmployeesPage';
@@ -30,7 +31,7 @@ const AppRoutes: React.FC = () => {
             N
           </div>
           <p className="text-sm font-display font-semibold text-slate-900">
-            {t('Loading NexaHR Enterprise Workspace...', 'جاري تحميل منصة نكسا إتش آر للشركات...')}
+            {t('Loading NexaHR Enterprise Workspace...', 'جاري تحميل منصة NexaHR للشركات...')}
           </p>
           <p className="text-xs text-slate-500">
             {t('Synchronizing authorized PostgreSQL records', 'جاري مزامنة سجلات قاعدة بيانات PostgreSQL المعتمدة')}
@@ -45,7 +46,9 @@ const AppRoutes: React.FC = () => {
       <>
         <Toaster position={isRtl ? 'top-left' : 'top-right'} dir={isRtl ? 'rtl' : 'ltr'} richColors />
         <Routes>
-          <Route path="*" element={<LoginPage />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </>
     );
@@ -57,6 +60,7 @@ const AppRoutes: React.FC = () => {
       <AppShell>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/login" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/employees" element={<EmployeesPage />} />
           <Route path="/employees/:id" element={<EmployeesPage />} />

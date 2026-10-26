@@ -176,8 +176,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       saveToken(data.token);
       await refreshWorkspace();
-      const isAr = localStorage.getItem('nexahr_lang') === 'ar';
-      toast.success(isAr ? `أهلاً بك مجدداً، ${data.actor.fullName}` : `Welcome back, ${data.actor.fullName}`);
+      const isAr = (localStorage.getItem('nexahr_lang_v2') || 'ar') === 'ar';
+      toast.success(isAr ? `أهلاً بك يا ${data.actor.fullName} في NexaHR` : `Welcome back, ${data.actor.fullName}`);
       return true;
     } catch (err: any) {
       toast.error(err.message || 'Sign in failed');
@@ -193,11 +193,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const idToken = await cred.user.getIdToken();
       saveToken(idToken);
       await refreshWorkspace();
-      const isAr = localStorage.getItem('nexahr_lang') === 'ar';
-      toast.success(isAr ? 'تم تسجيل الدخول بنجاح عبر Google' : 'Signed in with Google Workspace');
+      const isAr = (localStorage.getItem('nexahr_lang_v2') || 'ar') === 'ar';
+      toast.success(isAr ? 'تم تسجيل الدخول بنجاح في NexaHR' : 'Signed in with Google Workspace');
       return true;
     } catch (err: any) {
-      toast.error(err.message || 'Google Sign-In cancelled or failed');
+      toast.error(err.message || 'Sign-In cancelled or failed');
       setLoading(false);
       return false;
     }
@@ -210,8 +210,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       saveToken(null);
       setActor(null);
       setWorkspace(null);
-      const isAr = localStorage.getItem('nexahr_lang') === 'ar';
-      toast.info(isAr ? 'تم تسجيل الخروج من منصة نكسا إتش آر' : 'Signed out of NexaHR');
+      const isAr = (localStorage.getItem('nexahr_lang_v2') || 'ar') === 'ar';
+      toast.info(isAr ? 'تم تسجيل الخروج من منصة NexaHR' : 'Signed out of NexaHR');
     }
   };
 
