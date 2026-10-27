@@ -173,38 +173,38 @@ Models the end-to-end activity flow across the **Employee**, **NexaHR Domain Eng
 
 ```mermaid
 flowchart TD
-    Start((● Start)) --> SelectDates["Employee selects Leave Type, Start Date, End Date & Reason"]
+    StartNode(["Start: Leave Request"]) --> SelectDates["Employee selects Leave Type, Start Date, End Date and Reason"]
     SelectDates --> PostReq["POST /api/leave/requests"]
-    subgraph DomainValidation["NexaHR Domain Engine (src/domain/rules.ts)"]
-        PostReq --> CalcDays["calculateWorkingLeaveDays(startDate, endDate, [Fri, Sat], holidays)"]
-        CalcDays --> CheckZero{"Working Days > 0?"}
-        CheckZero -- "No (0 Days)" --> ErrZero["Return HTTP 400: Selected range contains 0 working days"]
-        CheckZero -- "Yes" --> CheckOverlap{"doDateRangesOverlap() with existing PENDING/APPROVED?"}
-        CheckOverlap -- "Yes (Overlap)" --> ErrOverlap["Return HTTP 400: Overlapping leave request exists"]
+    subgraph DomainValidation["NexaHR Domain Engine"]
+        PostReq --> CalcDays["calculateWorkingLeaveDays excluding Friday, Saturday and Cairo holidays"]
+        CalcDays --> CheckZero{"Working Days greater than 0?"}
+        CheckZero -- "No: 0 Working Days" --> ErrZero["Return HTTP 400: Selected range contains 0 working days"]
+        CheckZero -- "Yes" --> CheckOverlap{"doDateRangesOverlap with existing PENDING or APPROVED?"}
+        CheckOverlap -- "Yes: Overlap" --> ErrOverlap["Return HTTP 400: Overlapping leave request exists"]
         CheckOverlap -- "No" --> CheckQuota{"Leave Type deducts from balance?"}
-        CheckQuota -- "Yes (Annual/Casual/Sick)" --> VerifyAvail{"Available >= Working Days?<br/>(Allocated + CarryOver - Used - Pending)"}
+        CheckQuota -- "Yes: Annual, Casual or Sick" --> VerifyAvail{"Available Days at least Requested Working Days?"}
         VerifyAvail -- "No" --> ErrQuota["Return HTTP 400: Insufficient available leave balance"]
-        VerifyAvail -- "Yes" --> ReservePending["Increment leave_entitlements.pending_days += days"]
-        CheckQuota -- "No (Unpaid Leave)" --> InsertPending["Insert leave_requests (status = 'PENDING')"]
+        VerifyAvail -- "Yes" --> ReservePending["Increment leave_entitlements.pending_days"]
+        CheckQuota -- "No: Unpaid Leave" --> InsertPending["Insert leave_requests with status PENDING"]
         ReservePending --> InsertPending
     end
-    ErrZero --> EndErr([◉ End: Validation Rejected])
+    ErrZero --> EndErr(["End: Validation Rejected"])
     ErrOverlap --> EndErr
     ErrQuota --> EndErr
-    InsertPending --> NotifyMgr["Create Notification for Department Manager & Write Audit Log"]
-    NotifyMgr --> MgrReview{"Manager / HR Decision OR Employee Cancel?"}
-    MgrReview -- "Employee Cancels (PENDING → CANCELLED)" --> ReleaseCancel["applyLeaveBalanceTransition('PENDING', 'CANCELLED')<br/>pending_days -= days"]
-    ReleaseCancel --> AuditCancel["Update status = 'CANCELLED' & Append Audit Log"]
-    AuditCancel --> EndCancel([◉ End: Cancelled])
-    MgrReview -- "Manager Approves (PENDING → APPROVED)" --> CommitApprove["applyLeaveBalanceTransition('PENDING', 'APPROVED')<br/>pending_days -= days | used_days += days"]
-    CommitApprove --> NotifyEmpApp["Update status = 'APPROVED', Notify Employee & Append Audit Log"]
-    NotifyEmpApp --> EndApprove([◉ End: Approved])
-    MgrReview -- "Manager Rejects (PENDING → REJECTED)" --> CheckComment{"Rejection comment provided?"}
+    InsertPending --> NotifyMgr["Create Notification for Department Manager and Write Audit Log"]
+    NotifyMgr --> MgrReview{"Manager or HR Decision or Employee Cancel?"}
+    MgrReview -- "Employee Cancels: PENDING to CANCELLED" --> ReleaseCancel["applyLeaveBalanceTransition: decrement pending_days"]
+    ReleaseCancel --> AuditCancel["Update status to CANCELLED and Append Audit Log"]
+    AuditCancel --> EndCancel(["End: Cancelled"])
+    MgrReview -- "Manager Approves: PENDING to APPROVED" --> CommitApprove["applyLeaveBalanceTransition: decrement pending_days and increment used_days"]
+    CommitApprove --> NotifyEmpApp["Update status to APPROVED, Notify Employee and Append Audit Log"]
+    NotifyEmpApp --> EndApprove(["End: Approved"])
+    MgrReview -- "Manager Rejects: PENDING to REJECTED" --> CheckComment{"Rejection comment provided?"}
     CheckComment -- "No" --> ErrComment["Return HTTP 400: Rejection reason is mandatory"]
     ErrComment --> MgrReview
-    CheckComment -- "Yes" --> ReleaseReject["applyLeaveBalanceTransition('PENDING', 'REJECTED')<br/>pending_days -= days"]
-    ReleaseReject --> NotifyEmpRej["Update status = 'REJECTED', Notify Employee & Append Audit Log"]
-    NotifyEmpRej --> EndReject([◉ End: Rejected])
+    CheckComment -- "Yes" --> ReleaseReject["applyLeaveBalanceTransition: decrement pending_days"]
+    ReleaseReject --> NotifyEmpRej["Update status to REJECTED, Notify Employee and Append Audit Log"]
+    NotifyEmpRej --> EndReject(["End: Rejected"])
 ```
 
 ---
@@ -215,33 +215,33 @@ Models server-authoritative UTC check-in/out in `server.ts` and punctuality calc
 
 ```mermaid
 flowchart TD
-    Start((● Start)) --> ActionChoice{"Employee Attendance Action"}
+    StartNode(["Start: Attendance Action"]) --> ActionChoice{"Employee Attendance Action"}
     ActionChoice -- "Click Check-In" --> PostCheckIn["POST /api/attendance/check-in"]
     PostCheckIn --> CheckDup{"Existing Attendance Record for Today?"}
     CheckDup -- "Yes" --> RejectDup["Return HTTP 400: Already checked in today"]
-    RejectDup --> EndDup([◉ End])
-    CheckDup -- "No" --> CaptureIn["Capture Server UTC Timestamp (checkInUtc = new Date())"]
-    CaptureIn --> EvalGrace{"Cairo Local Time > Shift Start (09:00) + 15m Grace?"}
-    EvalGrace -- "No (<= 09:15)" --> SetPresent["status = 'PRESENT' | lateMinutes = 0"]
-    EvalGrace -- "Yes (> 09:15)" --> SetLate["status = 'LATE' | lateMinutes = checkInMinutes - 540"]
-    SetPresent --> SaveIn["INSERT INTO attendance_records & Append Audit Log"]
+    RejectDup --> EndDup(["End: Rejected"])
+    CheckDup -- "No" --> CaptureIn["Capture Server UTC Timestamp checkInUtc"]
+    CaptureIn --> EvalGrace{"Cairo Local Time after Shift Start 09:00 plus 15m Grace?"}
+    EvalGrace -- "No: On Time up to 09:15" --> SetPresent["Set status PRESENT and lateMinutes = 0"]
+    EvalGrace -- "Yes: After 09:15" --> SetLate["Set status LATE and compute lateMinutes"]
+    SetPresent --> SaveIn["INSERT INTO attendance_records and Append Audit Log"]
     SetLate --> SaveIn
-    SaveIn --> WaitOut["Session Active in UI (Check-Out Enabled)"]
+    SaveIn --> WaitOut["Session Active in UI with Check-Out Enabled"]
     ActionChoice -- "Click Check-Out" --> PostCheckOut["POST /api/attendance/check-out"]
     WaitOut --> PostCheckOut
     PostCheckOut --> CheckOpen{"Open Check-In Record Exists without Check-Out?"}
     CheckOpen -- "No" --> RejectOut["Return HTTP 400: No active check-in session found"]
     RejectOut --> EndDup
-    CheckOpen -- "Yes" --> CalcMetrics["calculateAttendanceMetrics(checkInUtc, checkOutUtc, '09:00', '17:00', 15)"]
-    CalcMetrics --> ComputeHours["Compute totalWorkedMinutes & overtimeMinutes (Worked > 480m)"]
+    CheckOpen -- "Yes" --> CalcMetrics["calculateAttendanceMetrics for 09:00 to 17:00 shift"]
+    CalcMetrics --> ComputeHours["Compute totalWorkedMinutes and overtimeMinutes"]
     ComputeHours --> UpdateOut["UPDATE attendance_records SET check_out_utc, total_worked_minutes, overtime_minutes"]
-    UpdateOut --> EndOut([◉ End: Shift Completed])
-    ActionChoice -- "Submit Correction Request" --> PostCorr["POST /api/attendance/corrections (requestedCheckIn, requestedCheckOut, reason)"]
-    PostCorr --> SaveCorr["INSERT INTO attendance_correction_requests (status = 'PENDING')"]
-    SaveCorr --> MgrDecision{"Manager / HR Reviews Correction"}
-    MgrDecision -- "Approve" --> ApplyCorr["Recalculate Metrics & UPDATE attendance_records"]
-    ApplyCorr --> EndCorr([◉ End: Record Corrected])
-    MgrDecision -- "Reject" --> MarkRej["UPDATE attendance_correction_requests SET status = 'REJECTED'"]
+    UpdateOut --> EndOut(["End: Shift Completed"])
+    ActionChoice -- "Submit Correction Request" --> PostCorr["POST /api/attendance/corrections"]
+    PostCorr --> SaveCorr["INSERT INTO attendance_correction_requests with status PENDING"]
+    SaveCorr --> MgrDecision{"Manager or HR Reviews Correction"}
+    MgrDecision -- "Approve" --> ApplyCorr["Recalculate Metrics and UPDATE attendance_records"]
+    ApplyCorr --> EndCorr(["End: Record Corrected"])
+    MgrDecision -- "Reject" --> MarkRej["UPDATE attendance_correction_requests SET status REJECTED"]
     MarkRej --> EndCorr
 ```
 
@@ -253,30 +253,30 @@ Models the multi-table transactional provisioning triggered when an HR Manager o
 
 ```mermaid
 flowchart TD
-    Start((● Start)) --> SubmitForm["HR Manager / Admin submits New Employee Modal"]
-    SubmitForm --> CheckRBAC{"canPerformAction(role, 'MANAGE_EMPLOYEES')?"}
+    StartNode(["Start: New Employee"]) --> SubmitForm["HR Manager or Admin submits New Employee Modal"]
+    SubmitForm --> CheckRBAC{"canPerformAction MANAGE_EMPLOYEES?"}
     CheckRBAC -- "False" --> Forbidden["Return HTTP 403 Forbidden"]
-    Forbidden --> EndFail([◉ End])
-    CheckRBAC -- "True" --> ValidateInput["validateEmployeeInput(email, phone, hireDate, salaryEgp)"]
+    Forbidden --> EndFail(["End: Terminated"])
+    CheckRBAC -- "True" --> ValidateInput["validateEmployeeInput for email, phone, hireDate and salaryEgp"]
     ValidateInput --> InputValid{"Valid Payload?"}
     InputValid -- "No" --> BadReq["Return HTTP 400 with field validation errors"]
     BadReq --> EndFail
-    InputValid -- "Yes" --> CheckCycle{"hasCircularManagerRelationship(empId, managerId, map)?"}
-    CheckCycle -- "True (Cycle Detected)" --> ErrCycle["Return HTTP 400: Circular reporting hierarchy detected"]
+    InputValid -- "Yes" --> CheckCycle{"hasCircularManagerRelationship detected?"}
+    CheckCycle -- "True: Cycle Detected" --> ErrCycle["Return HTTP 400: Circular reporting hierarchy detected"]
     ErrCycle --> EndFail
-    CheckCycle -- "False" --> GenCode["generateNextEmployeeNumber() → e.g. 'NW-EMP-026'"]
-    GenCode --> InsertEmp["INSERT INTO employees (status = 'ONBOARDING', onboarding_progress = 0)"]
-    InsertEmp --> ForkBar["=== Parallel Auto-Provisioning ==="]
-    ForkBar --> ProvLeave["INSERT INTO leave_entitlements (Annual 21d, Casual 7d, Sick 14d for 2026)"]
-    ForkBar --> ProvComp["INSERT INTO compensation_records (base_salary_egp, housing, transport, social_insurance)"]
-    ForkBar --> ProvOnboard["INSERT INTO onboarding_checklists + 4 default clearance tasks (IT, HR, Finance, Manager)"]
-    ForkBar --> ProvAudit["INSERT INTO audit_logs (action = 'EMPLOYEE_CREATED')"]
-    ProvLeave --> JoinBar["=== Join Provisioning ==="]
+    CheckCycle -- "False" --> GenCode["generateNextEmployeeNumber returns NW-EMP-026"]
+    GenCode --> InsertEmp["INSERT INTO employees with status ONBOARDING and progress 0"]
+    InsertEmp --> ForkBar["Parallel Auto-Provisioning Fork"]
+    ForkBar --> ProvLeave["INSERT INTO leave_entitlements: Annual 21d, Casual 7d, Sick 14d"]
+    ForkBar --> ProvComp["INSERT INTO compensation_records: base_salary_egp, allowances, insurance"]
+    ForkBar --> ProvOnboard["INSERT INTO onboarding_checklists and 4 default clearance tasks"]
+    ForkBar --> ProvAudit["INSERT INTO audit_logs: action EMPLOYEE_CREATED"]
+    ProvLeave --> JoinBar["Parallel Auto-Provisioning Join"]
     ProvComp --> JoinBar
     ProvOnboard --> JoinBar
     ProvAudit --> JoinBar
-    JoinBar --> Return201["Return HTTP 201 Created + Refresh Workspace"]
-    Return201 --> EndSuccess([◉ End: Employee Provisioned])
+    JoinBar --> Return201["Return HTTP 201 Created and Refresh Workspace"]
+    Return201 --> EndSuccess(["End: Employee Provisioned"])
 ```
 
 ---
