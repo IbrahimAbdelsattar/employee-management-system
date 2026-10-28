@@ -403,7 +403,7 @@ export const AttendancePage: React.FC = () => {
       {/* Submit Correction Modal */}
       {corrModalOpen && selectedRecord && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6">
             <h2 className="font-display text-lg font-bold text-slate-900">
               {t('Request Attendance Correction', 'تقديم طلب تصحيح حضور وانصراف')}
             </h2>
@@ -412,7 +412,7 @@ export const AttendancePage: React.FC = () => {
               {t('(Africa/Cairo Time)', '(بتوقيت القاهرة)')}
             </p>
             <form onSubmit={handleSubmitCorrection} className="mt-4 space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-medium text-slate-700 mb-1">
                     {t('Check-In Time (HH:mm)', 'وقت الحضور (HH:mm)')}

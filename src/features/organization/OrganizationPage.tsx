@@ -120,18 +120,18 @@ export const OrganizationPage: React.FC = () => {
     return (
       <div key={emp.id} className="mt-3">
         <div
-          className={`bg-white border border-slate-200 rounded-xl p-4 flex items-center justify-between max-w-xl ${
-            depth > 0 ? 'ms-6 sm:ms-10' : ''
+          className={`bg-white border border-slate-200 rounded-xl p-3.5 sm:p-4 flex flex-wrap items-center justify-between gap-2 max-w-xl ${
+            depth > 0 ? 'ms-3 sm:ms-10' : ''
           }`}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             {directReports.length > 0 ? (
               <button
                 onClick={() =>
                   setExpandedNodes((prev) => ({ ...prev, [emp.id]: !isExpanded }))
                 }
                 aria-label={`Toggle direct reports for ${emp.firstName} ${emp.lastName}`}
-                className="p-1 rounded hover:bg-slate-100 text-slate-500"
+                className="p-1 rounded hover:bg-slate-100 text-slate-500 shrink-0"
               >
                 {isExpanded ? (
                   <ChevronDown className="w-4 h-4" />
@@ -142,13 +142,13 @@ export const OrganizationPage: React.FC = () => {
                 )}
               </button>
             ) : (
-              <div className="w-6" />
+              <div className="w-6 shrink-0" />
             )}
             <div className="w-9 h-9 rounded-lg bg-[#0F172A] text-white flex items-center justify-center font-display font-bold text-xs shrink-0">
               {emp.firstName[0]}
               {emp.lastName[0]}
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs font-bold text-slate-900">
                 {emp.firstName} {emp.lastName}{' '}
                 <span className="font-mono font-normal text-slate-400">({emp.employeeNumber})</span>
@@ -160,7 +160,7 @@ export const OrganizationPage: React.FC = () => {
           </div>
 
           {directReports.length > 0 && (
-            <span className="text-[11px] font-mono text-[#4F46E5] font-semibold">
+            <span className="text-[11px] font-mono text-[#4F46E5] font-semibold shrink-0">
               {directReports.length}{' '}
               {t(
                 `direct report${directReports.length > 1 ? 's' : ''}`,
@@ -172,8 +172,8 @@ export const OrganizationPage: React.FC = () => {
 
         {isExpanded && directReports.length > 0 && (
           <div
-            className={`ps-4 sm:ps-6 ${
-              isRtl ? 'border-r ms-4' : 'border-l ms-4'
+            className={`ps-2.5 sm:ps-6 ${
+              isRtl ? 'border-r ms-2.5 sm:ms-4' : 'border-l ms-2.5 sm:ms-4'
             } border-slate-200`}
           >
             {directReports.map((child) => renderOrgNode(child, depth + 1))}
@@ -203,7 +203,7 @@ export const OrganizationPage: React.FC = () => {
         </div>
 
         {canManage && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setDeptModalOpen(true)}
               className="px-3.5 py-2 bg-[#4F46E5] hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 whitespace-nowrap"
@@ -223,10 +223,10 @@ export const OrganizationPage: React.FC = () => {
       </div>
 
       {/* Segmented Navigation Tabs */}
-      <div className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-lg w-fit">
+      <div className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-lg w-full sm:w-fit overflow-x-auto">
         <button
           onClick={() => setTab('DEPARTMENTS')}
-          className={`px-4 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          className={`px-3 sm:px-4 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
             tab === 'DEPARTMENTS' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
           }`}
         >
@@ -237,7 +237,7 @@ export const OrganizationPage: React.FC = () => {
         </button>
         <button
           onClick={() => setTab('JOB_TITLES')}
-          className={`px-4 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          className={`px-3 sm:px-4 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
             tab === 'JOB_TITLES' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
           }`}
         >
@@ -248,7 +248,7 @@ export const OrganizationPage: React.FC = () => {
         </button>
         <button
           onClick={() => setTab('ORG_CHART')}
-          className={`px-4 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+          className={`px-3 sm:px-4 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
             tab === 'ORG_CHART' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
           }`}
         >
@@ -406,12 +406,12 @@ export const OrganizationPage: React.FC = () => {
       {/* Create Department Modal */}
       {deptModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6">
             <h2 className="font-display text-lg font-bold text-slate-900">
               {t('Create New Department', 'إنشاء إدارة / قطاع جديد')}
             </h2>
             <form onSubmit={handleCreateDept} className="mt-4 space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-medium text-slate-700 mb-1">
                     {t('Code *', 'كود الإدارة *')}
@@ -451,7 +451,7 @@ export const OrganizationPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-medium text-slate-700 mb-1">
                     {t('Annual Budget (EGP)', 'الميزانية السنوية (ج.م)')}
@@ -504,12 +504,12 @@ export const OrganizationPage: React.FC = () => {
       {/* Create Job Title Modal */}
       {titleModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6">
             <h2 className="font-display text-lg font-bold text-slate-900">
               {t('Create New Job Title', 'إضافة مسمى وظيفي جديد')}
             </h2>
             <form onSubmit={handleCreateJobTitle} className="mt-4 space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-medium text-slate-700 mb-1">
                     {t('Code *', 'الكود *')}
@@ -537,7 +537,7 @@ export const OrganizationPage: React.FC = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-medium text-slate-700 mb-1">
                     {t('Department *', 'الإدارة *')}
@@ -572,7 +572,7 @@ export const OrganizationPage: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-medium text-slate-700 mb-1">
                     {t('Min Salary (EGP)', 'الحد الأدنى للراتب (ج.م)')}

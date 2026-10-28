@@ -106,9 +106,9 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col lg:flex-row" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Brand & Role Demonstration Panel */}
-      <div className="lg:w-7/12 bg-[#0F172A] text-white p-8 lg:p-14 flex flex-col justify-between">
+      <div className="lg:w-7/12 bg-[#0F172A] text-white p-5 sm:p-8 lg:p-14 flex flex-col justify-between">
         <div>
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <Link to="/" className="flex items-center gap-3 group">
               <div className="w-10 h-10 rounded-xl bg-[#4F46E5] flex items-center justify-center font-display font-bold text-xl">
                 N
@@ -226,10 +226,10 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* Authentication Form Panel */}
-      <div className="lg:w-5/12 flex items-center justify-center p-8 lg:p-14 bg-white">
+      <div className="lg:w-5/12 flex items-center justify-center p-5 sm:p-8 lg:p-14 bg-white">
         <div className="w-full max-w-md">
           {/* Mode Tabs */}
-          <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg mb-8">
+          <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg mb-8 overflow-x-auto">
             <button
               type="button"
               onClick={() => setTab('LOGIN')}

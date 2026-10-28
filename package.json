@@ -20,6 +20,7 @@
     "@types/pg": "^8.23.1",
     "@vitejs/plugin-react": "^6.1.1",
     "clsx": "^2.1.1",
+    "docx": "^9.15.0",
     "dotenv": "^17.2.3",
     "drizzle-kit": "^0.31.11",
     "drizzle-orm": "^0.45.4",

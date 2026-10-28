@@ -156,12 +156,12 @@ export const LeavePage: React.FC = () => {
 
       {/* Status Filter Bar */}
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-lg">
+        <div className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-lg overflow-x-auto max-w-full">
           {['ALL', 'PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
                 statusFilter === st ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
               }`}
             >
@@ -266,7 +266,7 @@ export const LeavePage: React.FC = () => {
       {/* Apply for Leave Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6">
             <h2 className="font-display text-lg font-bold text-slate-900">
               {t('Submit Leave Request', 'تقديم طلب إجازة جديد')}
             </h2>
@@ -312,7 +312,7 @@ export const LeavePage: React.FC = () => {
                 </label>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block font-medium text-slate-700 mb-1">
                     {t('Start Date *', 'تاريخ البداية *')}

@@ -139,7 +139,7 @@ export const TasksPage: React.FC = () => {
         {COLUMNS.map((col) => {
           const colTasks = visibleTasks.filter((task: any) => task.status === col.id);
           return (
-            <div key={col.id} className="bg-slate-100/80 border border-slate-200/90 rounded-xl p-3 space-y-3 min-h-[480px]">
+            <div key={col.id} className="bg-slate-100/80 border border-slate-200/90 rounded-xl p-3 space-y-3 md:min-h-[480px]">
               <div className="flex items-center justify-between px-1 py-1">
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold border ${col.badge}`}>
                   {t(col.labelEn, col.labelAr)}
@@ -325,7 +325,7 @@ export const TasksPage: React.FC = () => {
       {/* Create Task Modal */}
       {showNewModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-xl max-w-lg w-full overflow-hidden shadow-xl">
+          <div className="bg-white border border-slate-200 rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl">
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <h3 className="text-sm font-bold text-slate-900">
                 {t('Assign New Operational Task', 'تكليف بمهمة تشغيلية جديدة')}

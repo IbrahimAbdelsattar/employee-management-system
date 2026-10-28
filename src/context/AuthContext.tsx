@@ -142,12 +142,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .then((r) => r.json())
         .then(async (data) => {
           if (data.token) {
-            saveToken(data.token);
             const wsRes = await fetch('/api/bootstrap', {
               headers: { Authorization: `Bearer ${data.token}` },
             });
             if (wsRes.ok) {
               const wsData = await wsRes.json();
+              saveToken(data.token);
               setActor(wsData.actor);
               setWorkspace(wsData);
             }
@@ -158,7 +158,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       refreshWorkspace();
     }
-  }, [refreshWorkspace]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loginWithCredentials = async (email: string, password: string): Promise<boolean> => {
     try {

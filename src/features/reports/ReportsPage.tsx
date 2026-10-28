@@ -46,11 +46,24 @@ export const ReportsPage: React.FC = () => {
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             {t(
-              'Real-time database aggregations and one-click CSV data exports for compliance and auditing',
-              'إحصائيات فورية من قاعدة البيانات وتصدير مباشر لملفات CSV لأغراض المراجعة والامتثال'
+              'Real-time database aggregations, formal 15-slide UML Word documentation, and CSV data exports',
+              'إحصائيات فورية من قاعدة البيانات، وتحميل التوثيق الرسمي للمشروع (Word .DOCX — ١٥ شريحة بالـ UML)، وتصدير CSV'
             )}
           </p>
         </div>
+        <a
+          href="/api/docs/formal-docx"
+          download="NexaHR_Formal_Project_Documentation.docx"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#4F46E5] hover:bg-indigo-700 shadow-xs transition-colors whitespace-nowrap shrink-0"
+        >
+          <Download className="w-4 h-4" />
+          <span>
+            {t(
+              'Download Formal Documentation (.DOCX · 15 Slides)',
+              'تحميل توثيق المشروع الرسمي (Word .DOCX · ١٥ شريحة)'
+            )}
+          </span>
+        </a>
       </div>
 
       {/* Export Cards */}

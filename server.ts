@@ -1885,6 +1885,23 @@ app.post('/api/admin/users/invite', requireAuth, async (req: AuthRequest, res) =
 });
 
 // ============================================================================
+// FORMAL PROJECT DOCUMENTATION (.DOCX — 15 SLIDES WITH UML DIAGRAMS)
+// ============================================================================
+
+app.get('/api/docs/formal-docx', (_req, res) => {
+  const docxPath = path.join(process.cwd(), 'NexaHR_Formal_Project_Documentation.docx');
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  );
+  res.setHeader(
+    'Content-Disposition',
+    'attachment; filename="NexaHR_Formal_Project_Documentation.docx"'
+  );
+  res.sendFile(docxPath);
+});
+
+// ============================================================================
 // VITE DEV SERVER & STATIC SPA FALLBACK
 // ============================================================================
 

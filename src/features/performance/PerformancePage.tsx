@@ -131,7 +131,7 @@ export const PerformancePage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1">
             <button
               onClick={() => setActiveTab('reviews')}
@@ -164,7 +164,8 @@ export const PerformancePage: React.FC = () => {
 
       {activeTab === 'reviews' ? (
         <div className="bg-white border border-slate-200/90 rounded-xl shadow-2xs overflow-hidden">
-          <table className="w-full text-left border-collapse">
+          <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[680px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200/80 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                 <th className="py-3.5 px-5">{t('Employee', 'الموظف')}</th>
@@ -233,6 +234,7 @@ export const PerformancePage: React.FC = () => {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -299,14 +301,14 @@ export const PerformancePage: React.FC = () => {
             <div className="p-6 overflow-y-auto space-y-5">
               <div className="space-y-3">
                 {CRITERIA.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between gap-4 bg-slate-50 p-3 rounded-lg border border-slate-200/80">
+                  <div key={c.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 bg-slate-50 p-3 rounded-lg border border-slate-200/80">
                     <div>
                       <p className="text-xs font-bold text-slate-900">{t(c.nameEn, c.nameAr)}</p>
                       <p className="text-[11px] text-slate-500 font-mono">
                         {t('Weight:', 'الوزن النسبي:')} {c.weight}%
                       </p>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between sm:justify-end gap-3">
                       <input
                         type="range"
                         min={1}
@@ -314,7 +316,7 @@ export const PerformancePage: React.FC = () => {
                         step={0.5}
                         value={scores[c.id]}
                         onChange={(e) => setScores({ ...scores, [c.id]: Number(e.target.value) })}
-                        className="w-28 accent-[#4F46E5] cursor-pointer"
+                        className="flex-1 sm:w-28 accent-[#4F46E5] cursor-pointer"
                       />
                       <span className="font-mono text-xs font-bold text-slate-900 w-10 text-right">
                         {scores[c.id].toFixed(1)}

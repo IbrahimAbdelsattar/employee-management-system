@@ -123,9 +123,9 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-8">
       {/* Top Role Banner & Quick Check-In/Out Action */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 sm:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs text-slate-500">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
             <span>
               {trRole(primaryRole)} {t('VIEW', '— عرض الصلاحية')}
             </span>
@@ -168,11 +168,11 @@ export const DashboardPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 shrink-0 w-full md:w-auto">
           <button
             onClick={handleQuickAttendance}
             disabled={checkingAttendance}
-            className={`px-4 py-2.5 rounded-lg text-xs font-semibold text-white flex items-center gap-2 transition-colors whitespace-nowrap ${
+            className={`flex-1 sm:flex-initial justify-center px-4 py-2.5 rounded-lg text-xs font-semibold text-white flex items-center gap-2 transition-colors whitespace-nowrap ${
               myOpenSession
                 ? 'bg-amber-600 hover:bg-amber-700'
                 : 'bg-[#4F46E5] hover:bg-indigo-700'
@@ -192,7 +192,7 @@ export const DashboardPage: React.FC = () => {
           </button>
           <button
             onClick={() => navigate('/leave')}
-            className="px-4 py-2.5 rounded-lg text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors whitespace-nowrap"
+            className="flex-1 sm:flex-initial justify-center px-4 py-2.5 rounded-lg text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors whitespace-nowrap"
           >
             {t('Request Leave', 'طلب إجازة')}
           </button>
@@ -498,7 +498,7 @@ export const DashboardPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent / Pending Leave Requests */}
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div className="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-2">
             <div>
               <h2 className="font-display text-base font-bold text-slate-900">
                 {t('Leave Requests & Approvals', 'طلبات الإجازات والاعتمادات')}
@@ -509,7 +509,7 @@ export const DashboardPage: React.FC = () => {
             </div>
             <button
               onClick={() => navigate('/leave')}
-              className="text-xs font-medium text-[#4F46E5] hover:underline"
+              className="text-xs font-medium text-[#4F46E5] hover:underline shrink-0"
             >
               {t('Manage Leave', 'إدارة الإجازات')}
             </button>
@@ -519,9 +519,9 @@ export const DashboardPage: React.FC = () => {
               const emp = allEmployees.find((e) => e.id === req.employeeId);
               const lt = workspace.leaveTypes.find((t) => t.id === req.leaveTypeId);
               return (
-                <div key={req.id} className="px-6 py-3.5 flex items-center justify-between text-xs">
-                  <div>
-                    <p className="font-semibold text-slate-900">
+                <div key={req.id} className="px-4 sm:px-6 py-3.5 flex items-center justify-between gap-2 text-xs">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-slate-900 truncate">
                       {emp ? `${emp.firstName} ${emp.lastName}` : `Employee #${req.employeeId}`}
                     </p>
                     <p className="text-slate-500 mt-0.5">
@@ -530,7 +530,7 @@ export const DashboardPage: React.FC = () => {
                     </p>
                   </div>
                   <span
-                    className={`font-mono font-semibold ${
+                    className={`font-mono font-semibold shrink-0 ${
                       req.status === 'APPROVED'
                         ? 'text-emerald-700'
                         : req.status === 'PENDING'
@@ -548,7 +548,7 @@ export const DashboardPage: React.FC = () => {
 
         {/* Assigned Tasks & Deliverables */}
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div className="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between gap-2">
             <div>
               <h2 className="font-display text-base font-bold text-slate-900">
                 {t('Priority Deliverables & Tasks', 'المهام والتكليفات ذات الأولوية')}
@@ -559,7 +559,7 @@ export const DashboardPage: React.FC = () => {
             </div>
             <button
               onClick={() => navigate('/tasks')}
-              className="text-xs font-medium text-[#4F46E5] hover:underline"
+              className="text-xs font-medium text-[#4F46E5] hover:underline shrink-0"
             >
               {t('Open Task Board', 'فتح لوحة المهام')}
             </button>
@@ -568,8 +568,8 @@ export const DashboardPage: React.FC = () => {
             {workspace.tasks.slice(0, 5).map((task) => {
               const assignee = allEmployees.find((e) => e.id === task.assigneeEmployeeId);
               return (
-                <div key={task.id} className="px-6 py-3.5 flex items-center justify-between text-xs">
-                  <div className="min-w-0 pe-4">
+                <div key={task.id} className="px-4 sm:px-6 py-3.5 flex items-center justify-between gap-2 text-xs">
+                  <div className="min-w-0 pe-2">
                     <p className="font-semibold text-slate-900 truncate">{task.title}</p>
                     <p className="text-slate-500 mt-0.5">
                       {t('Assignee:', 'المكلف:')}{' '}

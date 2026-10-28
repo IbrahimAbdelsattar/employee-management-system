@@ -22,6 +22,8 @@ import {
   MessageSquare,
   X,
   PlayCircle,
+  Menu,
+  FileText,
 } from 'lucide-react';
 
 type PreviewTab = 'ATTENDANCE' | 'PAYROLL' | 'LEAVE';
@@ -94,6 +96,7 @@ export const LandingPage: React.FC = () => {
 
   const [previewTab, setPreviewTab] = useState<PreviewTab>('ATTENDANCE');
   const [signingInEmail, setSigningInEmail] = useState<string | null>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
 
   // Interactive Contact / Book Demo Modal State
   const [isContactModalOpen, setIsContactModalOpen] = useState<boolean>(false);
@@ -170,11 +173,11 @@ export const LandingPage: React.FC = () => {
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex flex-col" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Strict 3-Zone Top Bar Contract */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80">
-        <div className="max-w-[1320px] mx-auto px-6 h-16 flex items-center justify-between gap-8">
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3 sm:gap-8">
           {/* Zone 1: Single-line Brand Wordmark (Always English NexaHR) */}
           <a
             href="#top"
-            className="font-display text-xl font-bold tracking-tight text-slate-900 whitespace-nowrap shrink-0"
+            className="font-display text-lg sm:text-xl font-bold tracking-tight text-slate-900 whitespace-nowrap shrink-0"
           >
             NexaHR
           </a>
@@ -210,31 +213,75 @@ export const LandingPage: React.FC = () => {
             </a>
           </nav>
 
-          {/* Zone 3: 1 Primary CTA Button */}
-          <div className="flex items-center shrink-0">
+          {/* Zone 3: 1 Primary CTA Button + Mobile Nav Toggle */}
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => navigate('/login')}
-              className="px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-[#4F46E5] hover:bg-indigo-700 rounded-lg transition-colors whitespace-nowrap shrink-0"
+              className="px-3.5 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-[#4F46E5] hover:bg-indigo-700 rounded-lg transition-colors whitespace-nowrap shrink-0"
             >
               {t('Sign In to NexaHR', 'دخول إلى منصة NexaHR')}
             </button>
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen(!mobileNavOpen)}
+              aria-label={t('Toggle mobile navigation', 'فتح قائمة الروابط')}
+              className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 border border-slate-200/80"
+            >
+              {mobileNavOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Navigation Drawer */}
+        {mobileNavOpen && (
+          <div className="md:hidden border-t border-slate-200 bg-white px-4 py-3 space-y-2 shadow-lg">
+            <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-700">
+              <a
+                href="#capabilities"
+                onClick={() => setMobileNavOpen(false)}
+                className="px-3 py-2 rounded-lg bg-slate-50 hover:bg-indigo-50 hover:text-[#4F46E5]"
+              >
+                {t('Capabilities', 'المميزات')}
+              </a>
+              <a
+                href="#payroll-simulator"
+                onClick={() => setMobileNavOpen(false)}
+                className="px-3 py-2 rounded-lg bg-slate-50 hover:bg-indigo-50 hover:text-[#4F46E5]"
+              >
+                {t('Payroll Simulator', 'محاكي المرتبات')}
+              </a>
+              <a
+                href="#impact"
+                onClick={() => setMobileNavOpen(false)}
+                className="px-3 py-2 rounded-lg bg-slate-50 hover:bg-indigo-50 hover:text-[#4F46E5]"
+              >
+                {t('Client Impact', 'نتائج الشركات')}
+              </a>
+              <a
+                href="#live-demo"
+                onClick={() => setMobileNavOpen(false)}
+                className="px-3 py-2 rounded-lg bg-slate-50 hover:bg-indigo-50 hover:text-[#4F46E5]"
+              >
+                {t('Demo Accounts', 'الحسابات التجريبية')}
+              </a>
+            </div>
+          </div>
+        )}
       </header>
 
       <main id="top" className="flex-1">
         {/* HERO SECTION */}
-        <section className="relative overflow-hidden pt-10 pb-16 lg:pt-16 lg:pb-24 border-b border-slate-200/80">
-          <div className="max-w-[1320px] mx-auto px-6">
+        <section className="relative overflow-hidden pt-7 pb-12 sm:pt-10 sm:pb-16 lg:pt-16 lg:pb-24 border-b border-slate-200/80">
+          <div className="max-w-[1320px] mx-auto px-4 sm:px-6">
             {/* Top Utility Row inside Hero: Regional Context + Language Toggle */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: EASE_OUT_EXPO }}
-              className="flex flex-wrap items-center justify-between gap-4 mb-8"
+              className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8"
             >
-              <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-slate-500">
                 <span>{t('Built for Egyptian Enterprises', 'مصمم خصيصاً للشركات والمؤسسات في مصر')}</span>
                 <span aria-hidden="true">·</span>
                 <span>{t('Cairo Timezone (UTC+2)', 'توقيت القاهرة الرسمي')}</span>
@@ -242,15 +289,28 @@ export const LandingPage: React.FC = () => {
                 <span>{t('EGP Payroll & Labor Rules', 'مرتبات بالجنيه المصري EGP')}</span>
               </div>
 
-              <button
-                type="button"
-                onClick={toggleLocale}
-                aria-label={locale === 'en' ? 'Switch to Egyptian Arabic RTL' : 'Switch to English LTR'}
-                className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-xs font-semibold text-slate-700 border border-slate-200 transition-colors whitespace-nowrap shrink-0"
-              >
-                <Globe className="w-3.5 h-3.5 text-[#4F46E5]" />
-                <span>{locale === 'en' ? 'العربية (مصر)' : 'English'}</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <a
+                  href="/api/docs/formal-docx"
+                  download="NexaHR_Formal_Project_Documentation.docx"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-xs font-semibold text-[#4F46E5] border border-indigo-200 transition-colors whitespace-nowrap shrink-0"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>
+                    {t('Download Word Docs (15 Slides .DOCX)', 'تحميل التوثيق الرسمي (Word · ١٥ شريحة)')}
+                  </span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={toggleLocale}
+                  aria-label={locale === 'en' ? 'Switch to Egyptian Arabic RTL' : 'Switch to English LTR'}
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-xs font-semibold text-slate-700 border border-slate-200 transition-colors whitespace-nowrap shrink-0"
+                >
+                  <Globe className="w-3.5 h-3.5 text-[#4F46E5]" />
+                  <span>{locale === 'en' ? 'العربية (مصر)' : 'English'}</span>
+                </button>
+              </div>
             </motion.div>
 
             {/* 2-Column Hero Split */}
@@ -286,7 +346,7 @@ export const LandingPage: React.FC = () => {
                   {/* Hero Action Row with Smooth Mount & Interactive Motion */}
                   <motion.div
                     variants={HERO_ITEM_VARIANTS}
-                    className="mt-8 flex flex-wrap items-center gap-3"
+                    className="mt-8 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3"
                   >
                     {/* Primary CTA: Sign In to NexaHR */}
                     <motion.button
@@ -295,7 +355,7 @@ export const LandingPage: React.FC = () => {
                       whileTap={{ scale: 0.98 }}
                       transition={{ duration: 0.16, ease: EASE_OUT_EXPO }}
                       onClick={() => navigate('/login')}
-                      className="px-6 py-3 bg-[#4F46E5] hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap shrink-0 shadow-sm"
+                      className="w-full sm:w-auto justify-center px-6 py-3 bg-[#4F46E5] hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap shrink-0 shadow-sm"
                     >
                       <span>{t('Sign In to NexaHR', 'دخول إلى منصة NexaHR')}</span>
                       {isRtl ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
@@ -308,7 +368,7 @@ export const LandingPage: React.FC = () => {
                       whileTap={{ scale: 0.98 }}
                       transition={{ duration: 0.16, ease: EASE_OUT_EXPO }}
                       onClick={handleOpenContactModal}
-                      className="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap shrink-0"
+                      className="w-full sm:w-auto justify-center px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap shrink-0"
                     >
                       <MessageSquare className="w-4 h-4 text-[#06B6D4]" />
                       <span>
@@ -323,7 +383,7 @@ export const LandingPage: React.FC = () => {
                       whileTap={{ scale: 0.98 }}
                       transition={{ duration: 0.16, ease: EASE_OUT_EXPO }}
                       onClick={handleScrollToDemoSection}
-                      className="px-4 py-3 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-sm font-semibold rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap shrink-0"
+                      className="w-full sm:w-auto justify-center px-4 py-3 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-sm font-semibold rounded-xl transition-colors flex items-center gap-2 whitespace-nowrap shrink-0"
                     >
                       <PlayCircle className="w-4 h-4 text-[#4F46E5]" />
                       <span>{t('Try Instant Demo Account', 'جرب حساب تجريبي جاهز فوراً')}</span>
@@ -378,11 +438,11 @@ export const LandingPage: React.FC = () => {
                       </div>
 
                       {/* Interactive Segmented Control */}
-                      <div className="flex items-center gap-1 p-1 bg-slate-900 rounded-lg border border-slate-800">
+                      <div className="flex items-center gap-1 p-1 bg-slate-900 rounded-lg border border-slate-800 w-full sm:w-auto overflow-x-auto">
                         <button
                           type="button"
                           onClick={() => setPreviewTab('ATTENDANCE')}
-                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
+                          className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
                             previewTab === 'ATTENDANCE'
                               ? 'bg-[#4F46E5] text-white'
                               : 'text-slate-400 hover:text-white'
@@ -393,7 +453,7 @@ export const LandingPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setPreviewTab('PAYROLL')}
-                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
+                          className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
                             previewTab === 'PAYROLL'
                               ? 'bg-[#4F46E5] text-white'
                               : 'text-slate-400 hover:text-white'
@@ -404,7 +464,7 @@ export const LandingPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setPreviewTab('LEAVE')}
-                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
+                          className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
                             previewTab === 'LEAVE'
                               ? 'bg-[#4F46E5] text-white'
                               : 'text-slate-400 hover:text-white'
@@ -503,7 +563,7 @@ export const LandingPage: React.FC = () => {
                               <span className="font-mono text-[#06B6D4]">EGP · الجنيه المصري</span>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-3 bg-slate-900/70 border border-slate-800 rounded-xl p-4 tabular-nums">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/70 border border-slate-800 rounded-xl p-4 tabular-nums">
                               <div>
                                 <p className="text-[11px] text-slate-400">
                                   {t('Total Gross Payroll', 'إجمالي الاستحقاقات')}
@@ -591,7 +651,7 @@ export const LandingPage: React.FC = () => {
                   </div>
 
                   {/* Preview Footer Action */}
-                  <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-4 text-xs">
+                  <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 text-xs">
                     <span className="text-slate-400">
                       {t(
                         'Want to test the real database workflows right now?',
@@ -1179,7 +1239,7 @@ export const LandingPage: React.FC = () => {
               exit={{ opacity: 0, y: 14, scale: 0.97 }}
               transition={{ duration: 0.28, ease: EASE_OUT_EXPO }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden"
+              className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-2xl border border-slate-200 shadow-xl"
             >
               {/* Modal Header */}
               <div className="px-6 py-5 bg-[#0F172A] text-white flex items-start justify-between gap-4">
